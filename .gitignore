@@ -1,0 +1,10 @@
+# individual files
+Makefile
+main.c
+
+# binaries
+main
+
+# directories
+obj/
+bin/
