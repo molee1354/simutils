@@ -14,7 +14,7 @@ To use the data structures and math modules provided by `simutils`, simply inclu
 
 `simutils` comes with a two very helpful data structures, `vector` and `matrix`. The advantage of using `vector` and `matrix` instead of single `int*` or double `float**` pointers is that both `vector` and `matrix` carry along their size information (like how you could with a `struct`), while still preserving the ability to be directly indexed (like a array defined from a pointer).
 
-### `vector`
+### Using `vector`
 
 Below is an example usage of the `vector` data structure. The `vector` data structure holds elements of type `double`.
 
@@ -36,7 +36,7 @@ int main(int argc, char** argv) {
     int size = LENGTH(vec);
 
     // add an element to the vector
-    grow_vector(vec, 1.);
+    grow_vector(&vec, 1.);
 
     // free the memory allocated for the vector
     free_vector(vec);
@@ -44,7 +44,7 @@ int main(int argc, char** argv) {
 }
 ```
 
-### `matrix`
+### Using `matrix`
 
 Below is an example usage of the `matrix` data structure. The `matrix` data structure holds elements of type `double`.
 
