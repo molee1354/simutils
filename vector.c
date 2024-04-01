@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include <omp.h>
 #include "vector.h"
 #include "error.h"
 
@@ -8,6 +9,30 @@
         raise_error(SIMUTIL_ALLOCATE_ERROR,"NULL allocation for vector!\n");\
         exit(EXIT_FAILURE);\
     }\
+
+void add_simd(vector vec1, vector vec2) {
+    if (LENGTH(vec1) != LENGTH(vec2)) {
+        raise_error(SIMUTIL_DIMENSION_ERROR, "Vector dimension mismatch.");
+        exit(EXIT_FAILURE);
+    }
+    int len = LENGTH(vec1);
+#pragma omp for simd
+    for (int i = 0; i < len; i++) {
+        vec1[i] += vec2[i];
+    }
+}
+
+void add(vector vec1, vector vec2) {
+    if (LENGTH(vec1) != LENGTH(vec2)) {
+        raise_error(SIMUTIL_DIMENSION_ERROR, "Vector dimension mismatch.");
+        exit(EXIT_FAILURE);
+    }
+    int len = LENGTH(vec1);
+#pragma omp for simd
+    for (int i = 0; i < len; i++) {
+        vec1[i] += vec2[i];
+    }
+}
 
 vector make_vector(unsigned int size) {
     void* vec_mem = calloc(1, size*sizeof(double)+SIZE_BYTE);

@@ -12,6 +12,9 @@ typedef double* vector;
 #define LENGTH(vec) \
     (unsigned int)(*( (vector)vec-1 ))
 
+void add(vector vec1, vector vec2);
+void add_simd(vector vec1, vector vec2);
+
 /**
  * @brief Function to create a new vector with a given size
  *
