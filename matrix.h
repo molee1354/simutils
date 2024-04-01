@@ -3,17 +3,17 @@
 
 typedef double** matrix;
 
-#define SIZE_BYTE (size_t)(sizeof(double)*2)
+#define MATRIX_SIZE_BYTE (size_t)(sizeof(double)*2)
 
 /**
  * @brief Macro to access the size byte of the matrix
  *
  */
 #define ROWS(mat) \
-    *( ((unsigned int*)((char*)mat - SIZE_BYTE))+0 )
+    *( ((unsigned int*)((char*)mat - MATRIX_SIZE_BYTE))+0 )
 
 #define COLS(mat) \
-    *( ((unsigned int*)((char*)mat - SIZE_BYTE))+1 )
+    *( ((unsigned int*)((char*)mat - MATRIX_SIZE_BYTE))+1 )
 
 /**
  * @brief Function to create a new matrix with a given size
@@ -30,6 +30,21 @@ matrix make_matrix(unsigned int nrows, unsigned int ncols);
  */
 void free_matrix(matrix mat);
 
+/**
+ * @brief Function to save a matrix into a file
+ *
+ * @param mat 
+ * @param filename 
+ */
+void save_matrix(matrix mat, const char* filename);
+
+/**
+ * @brief Function to read a saved matrix from a given filename
+ *
+ * @param filename 
+ * @return 
+ */
+matrix read_matrix(const char* filename);
 
 /**
  * @brief Function to print a matrix
@@ -37,13 +52,5 @@ void free_matrix(matrix mat);
  * @param mat Vector to print
  */
 void print_matrix(matrix mat);
-
-/**
- * @brief Function to add an element to a matrix
- *
- * @param mat 
- * @param elem 
- */
-void grow_matrix(matrix* mat, double elem);
 
 #endif

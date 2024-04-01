@@ -3,7 +3,7 @@
 
 typedef double* vector;
 
-#define SIZE_BYTE (size_t)(sizeof(double)*1)
+#define VECTOR_SIZE_BYTE (size_t)(sizeof(double)*1)
 
 /**
  * @brief Macro to access the size byte of the vector
@@ -11,6 +11,9 @@ typedef double* vector;
  */
 #define LENGTH(vec) \
     (unsigned int)(*( (vector)vec-1 ))
+
+void add(vector vec1, vector vec2);
+void add_simd(vector vec1, vector vec2);
 
 /**
  * @brief Function to create a new vector with a given size
@@ -34,6 +37,20 @@ void free_vector(vector vec);
  * @param vec Vector to print
  */
 void print_vector(vector vec);
+
+/**
+ * @brief Function to save a vector
+ *
+ * @param vec
+ */
+void save_vector(vector vec, const char* filename);
+
+/**
+ * @brief Function to read the saved vector from a file
+ *
+ * @param filename 
+ */
+vector read_vector(const char* filename);
 
 /**
  * @brief Function to get the length of the vector

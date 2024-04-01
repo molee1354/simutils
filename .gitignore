@@ -10,3 +10,7 @@ main
 obj/
 bin/
 .vscode/
+
+# file patterns
+*.mat
+*.vec
