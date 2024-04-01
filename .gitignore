@@ -1,6 +1,7 @@
 # individual files
 Makefile
 main.c
+.clangd
 
 # binaries
 main
@@ -8,3 +9,4 @@ main
 # directories
 obj/
 bin/
+.vscode/
