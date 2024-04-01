@@ -11,7 +11,7 @@
     }\
 
 #define INIT_VECTOR(mem, out, size) \
-    out = (vector)( (char*)mem + SIZE_BYTE );\
+    out = (vector)( (char*)mem + VECTOR_SIZE_BYTE );\
     *(out-1) = (double)size;\
 
 void add_simd(vector vec1, vector vec2) {
@@ -62,7 +62,7 @@ vector read_vector(const char *filename) {
         exit(EXIT_FAILURE);
     }
     vector out;
-    void* vec_mem = calloc(1, size*sizeof(double)+SIZE_BYTE);
+    void* vec_mem = calloc(1, size*sizeof(double)+VECTOR_SIZE_BYTE);
     CHECK(vec_mem);\
     INIT_VECTOR(vec_mem, out, size);
     if (!fread(out, sizeof(double), size, file)) {
@@ -76,24 +76,24 @@ vector read_vector(const char *filename) {
 
 vector make_vector(unsigned int size) {
     vector out;
-    void* vec_mem = calloc(1, size*sizeof(double)+SIZE_BYTE);
+    void* vec_mem = calloc(1, size*sizeof(double)+VECTOR_SIZE_BYTE);
     CHECK(vec_mem);\
     INIT_VECTOR(vec_mem, out, size);
     return out;
 }
 
 void free_vector(vector vec) {
-    void* vec_mem = (void*)( (char*)vec - SIZE_BYTE );
+    void* vec_mem = (void*)( (char*)vec - VECTOR_SIZE_BYTE );
     free(vec_mem);
 }
 
 void grow_vector(vector* vec, double elem) {
     CHECK(vec);
     unsigned int new_size = LENGTH(*vec)+1;
-    void* vec_mem = (void*)( (char*)*vec - SIZE_BYTE );
-    void* new_vec_mem = realloc(vec_mem, (new_size)*sizeof(double)+SIZE_BYTE);
+    void* vec_mem = (void*)( (char*)*vec - VECTOR_SIZE_BYTE );
+    void* new_vec_mem = realloc(vec_mem, (new_size)*sizeof(double)+VECTOR_SIZE_BYTE);
     CHECK(new_vec_mem);
-    vector out = (vector)( (char*)new_vec_mem + SIZE_BYTE );
+    vector out = (vector)( (char*)new_vec_mem + VECTOR_SIZE_BYTE );
     *(out-1) = (double)new_size;
     out[new_size-1] = elem;
     *vec = out;
@@ -111,4 +111,4 @@ void print_vector(vector vec) {
                       printf("%g", vec[i]);
     }
     printf("]\n");
-} 
+}

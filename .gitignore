@@ -12,4 +12,5 @@ bin/
 .vscode/
 
 # file patterns
+*.mat
 *.vec
