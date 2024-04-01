@@ -3,6 +3,7 @@
 
 typedef double* vector;
 
+#define SIZE_BYTE (size_t)(sizeof(double)*1)
 
 /**
  * @brief Macro to access the size byte of the vector
