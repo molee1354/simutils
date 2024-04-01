@@ -85,6 +85,7 @@ vector make_vector(unsigned int size) {
 void free_vector(vector vec) {
     void* vec_mem = (void*)( (char*)vec - VECTOR_SIZE_BYTE );
     free(vec_mem);
+    vec_mem = NULL;
 }
 
 void grow_vector(vector* vec, double elem) {

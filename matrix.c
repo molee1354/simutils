@@ -62,7 +62,12 @@ matrix read_matrix(const char *filename) {
     CHECK(mat_mem);
     INIT_MATRIX(mat_mem, out, nrows, ncols);
     for (int i = 0; i < nrows; i++) {
-        fread(out[i], sizeof(double), ncols, file);
+        if (!fread(out[i], sizeof(double), ncols, file)) {
+            raise_error(SIMUTIL_ALLOCATE_ERROR,
+                    "Problem reading %dth row in matrix.", i);
+            fclose(file);
+            exit(EXIT_FAILURE);
+        }
     }
     fclose(file);
     return out;
@@ -88,7 +93,9 @@ void free_matrix(matrix mat) {
     int nrow = ROWS(mat);
     for (int i = 0; i < nrow; i++) {
         free(mat[i]);
+        mat[i] = NULL;
     }
     void* vec_mem = (void*)( (char*)mat - MATRIX_SIZE_BYTE );
     free(vec_mem);
+    vec_mem = NULL;
 }
