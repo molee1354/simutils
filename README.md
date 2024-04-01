@@ -38,8 +38,21 @@ int main(int argc, char** argv) {
     // add an element to the vector
     grow_vector(&vec, 1.);
 
+    // save vector to a file
+    save_vector(vec, "saved_vector.vec");
+
     // free the memory allocated for the vector
     free_vector(vec);
+
+    // read a vector from a saved file
+    vector new_vector = read_vector("saved_vector.vec");
+
+    // operate on the read vector
+    print_vector(new_vector);
+
+    // free memory allocated for read vector
+    free_vector(new_vec);
+
     return 0;
 }
 ```
@@ -66,8 +79,21 @@ int main(int argc, char** argv) {
     int rows = ROWS(mat);
     int cols = COLS(mat);
 
+    // save matrix to a file
+    save_matrix(mat, "saved_matrix.mat");
+
     // free the memory allocated for the matrix
     free_matrix(mat);
+
+    // read a matrix from a saved file
+    matrix new_matrix = read_matrix("saved_matrix.mat");
+
+    // operate on the read matrix
+    print_matrix(new_matrix);
+
+    // free memory allocated for read matrix
+    free_matrix(new_mat);
+
     return 0;
 }
 ```
