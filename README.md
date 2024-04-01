@@ -45,10 +45,10 @@ int main(int argc, char** argv) {
     free_vector(vec);
 
     // read a vector from a saved file
-    vector new_vector = read_vector("saved_vector.vec");
+    vector new_vec = read_vector("saved_vector.vec");
 
     // operate on the read vector
-    print_vector(new_vector);
+    print_vector(new_vec);
 
     // free memory allocated for read vector
     free_vector(new_vec);
@@ -86,10 +86,10 @@ int main(int argc, char** argv) {
     free_matrix(mat);
 
     // read a matrix from a saved file
-    matrix new_matrix = read_matrix("saved_matrix.mat");
+    matrix new_mat = read_matrix("saved_matrix.mat");
 
     // operate on the read matrix
-    print_matrix(new_matrix);
+    print_matrix(new_mat);
 
     // free memory allocated for read matrix
     free_matrix(new_mat);
