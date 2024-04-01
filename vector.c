@@ -10,6 +10,10 @@
         exit(EXIT_FAILURE);\
     }\
 
+#define INIT_VECTOR(mem, out, size) \
+    out = (vector)( (char*)mem + SIZE_BYTE );\
+    *(out-1) = (double)size;\
+
 void add_simd(vector vec1, vector vec2) {
     if (LENGTH(vec1) != LENGTH(vec2)) {
         raise_error(SIMUTIL_DIMENSION_ERROR, "Vector dimension mismatch.");
@@ -34,11 +38,47 @@ void add(vector vec1, vector vec2) {
     }
 }
 
-vector make_vector(unsigned int size) {
+typedef struct {
+    vector vec;
+    unsigned int size;
+} saved_vector;
+
+void save_vector(vector vec, const char* filename) {
+    FILE* file = fopen(filename, "wb");
+    CHECK(file);
+    unsigned int size = LENGTH(vec);
+    fwrite(&size, sizeof(size), 1, file);
+    fwrite(vec, sizeof(double), size, file);
+    fclose(file);
+}
+
+vector read_vector(const char *filename) {
+    FILE* file = fopen(filename, "rb");
+    CHECK(file);
+    unsigned int size;
+    if (!fread(&size, sizeof(size), 1, file)) {
+        raise_error(SIMUTIL_ALLOCATE_ERROR, "Problem reading the 'size'.");
+        fclose(file);
+        exit(EXIT_FAILURE);
+    }
+    vector out;
     void* vec_mem = calloc(1, size*sizeof(double)+SIZE_BYTE);
-    CHECK(vec_mem);
-    vector out = (vector)( (char*)vec_mem + SIZE_BYTE );
-    *(out-1) = (double)size;
+    CHECK(vec_mem);\
+    INIT_VECTOR(vec_mem, out, size);
+    if (!fread(out, sizeof(double), size, file)) {
+        raise_error(SIMUTIL_ALLOCATE_ERROR, "Problem reading the 'vec'.");
+        fclose(file);
+        exit(EXIT_FAILURE);
+    }
+    fclose(file);
+    return out;
+}
+
+vector make_vector(unsigned int size) {
+    vector out;
+    void* vec_mem = calloc(1, size*sizeof(double)+SIZE_BYTE);
+    CHECK(vec_mem);\
+    INIT_VECTOR(vec_mem, out, size);
     return out;
 }
 

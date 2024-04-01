@@ -39,6 +39,20 @@ void free_vector(vector vec);
 void print_vector(vector vec);
 
 /**
+ * @brief Function to save a vector
+ *
+ * @param vec
+ */
+void save_vector(vector vec, const char* filename);
+
+/**
+ * @brief Function to read the saved vector from a file
+ *
+ * @param filename 
+ */
+vector read_vector(const char* filename);
+
+/**
  * @brief Function to get the length of the vector
  *
  * @param vec 
