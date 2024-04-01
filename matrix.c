@@ -1,10 +1,11 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include "matrix.h"
+#include "error.h"
 
 #define CHECK(p)\
     if (!p) {\
-        fprintf(stderr, "Function received a NULL pointer instead of a matrix!\n");\
+        raise_error(SIMUTIL_ALLOCATE_ERROR,"NULL allocation for matrix!\n");\
         exit(EXIT_FAILURE);\
     }\
 
