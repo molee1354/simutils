@@ -12,6 +12,10 @@ static void error_type(error_t err) {
             fprintf(stderr, "\n\033[1;31mSIMUTIL ALLOCATE ERROR:\033[0m\n");
             break;
         }
+        default: {
+            fprintf(stderr, "\n\033[1;31mSIMUTIL UNDEFINED ERROR:\033[0m\n");
+            break;
+        }
     }
 }
 
