@@ -19,7 +19,7 @@ void add_simd(vector vec1, vector vec2) {
         raise_error(SIMUTIL_DIMENSION_ERROR, "Vector dimension mismatch.");
         exit(EXIT_FAILURE);
     }
-    int len = LENGTH(vec1);
+    const int len = LENGTH(vec1);
 #pragma omp for simd
     for (int i = 0; i < len; i++) {
         vec1[i] += vec2[i];
@@ -31,22 +31,17 @@ void add(vector vec1, vector vec2) {
         raise_error(SIMUTIL_DIMENSION_ERROR, "Vector dimension mismatch.");
         exit(EXIT_FAILURE);
     }
-    int len = LENGTH(vec1);
+    const int len = LENGTH(vec1);
 #pragma omp for simd
     for (int i = 0; i < len; i++) {
         vec1[i] += vec2[i];
     }
 }
 
-typedef struct {
-    vector vec;
-    unsigned int size;
-} saved_vector;
-
 void save_vector(vector vec, const char* filename) {
     FILE* file = fopen(filename, "wb");
     CHECK(file);
-    unsigned int size = LENGTH(vec);
+    const unsigned int size = LENGTH(vec);
     fwrite(&size, sizeof(size), 1, file);
     fwrite(vec, sizeof(double), size, file);
     fclose(file);
@@ -74,7 +69,7 @@ vector read_vector(const char *filename) {
     return out;
 }
 
-vector make_vector(unsigned int size) {
+vector new_vector(unsigned int size) {
     vector out;
     void* vec_mem = calloc(1, size*sizeof(double)+VECTOR_SIZE_BYTE);
     CHECK(vec_mem);\
@@ -90,7 +85,7 @@ void free_vector(vector vec) {
 
 void grow_vector(vector* vec, double elem) {
     CHECK(vec);
-    unsigned int new_size = LENGTH(*vec)+1;
+    const unsigned int new_size = LENGTH(*vec)+1;
     void* vec_mem = (void*)( (char*)*vec - VECTOR_SIZE_BYTE );
     void* new_vec_mem = realloc(vec_mem, (new_size)*sizeof(double)+VECTOR_SIZE_BYTE);
     CHECK(new_vec_mem);
@@ -105,7 +100,7 @@ unsigned int get_length(vector vec) {
 }
 
 void print_vector(vector vec) {
-    int size = (int)LENGTH(vec);
+    const int size = (int)LENGTH(vec);
     printf("[");
     for (int i = 0; i < size; i++) {
         i != size-1 ? printf("%g, ", vec[i]) : 

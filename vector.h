@@ -21,7 +21,7 @@ void add_simd(vector vec1, vector vec2);
  * @param size The size of the new vector
  * @return vector Double pointer to a new vector
  */
-vector make_vector(unsigned int size);
+vector new_vector(unsigned int size);
 
 /**
  * @brief Function to properly free the memory allocated to the vector

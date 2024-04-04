@@ -21,7 +21,7 @@ typedef double** matrix;
  * @param size The size of the new matrix
  * @return matrix Double pointer to a new matrix
  */
-matrix make_matrix(unsigned int nrows, unsigned int ncols);
+matrix new_matrix(unsigned int nrows, unsigned int ncols);
 
 /**
  * @brief Function to properly free the memory allocated to the matrix
