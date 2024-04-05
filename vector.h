@@ -3,14 +3,16 @@
 
 typedef double* vector;
 
-#define VECTOR_SIZE_BYTE (size_t)(sizeof(double)*1)
+#define VECTOR_SIZE_BYTE (size_t)(sizeof(unsigned int)*1)
 
 /**
  * @brief Macro to access the size byte of the vector
  *
  */
+/* #define LENGTH(vec) \
+    (unsigned int)(*( (vector)vec-1 )) */
 #define LENGTH(vec) \
-    (unsigned int)(*( (vector)vec-1 ))
+    *( (unsigned int*)(((char*)vec - VECTOR_SIZE_BYTE))+0 ) 
 
 void add(vector vec1, vector vec2);
 void add_simd(vector vec1, vector vec2);
@@ -21,7 +23,7 @@ void add_simd(vector vec1, vector vec2);
  * @param size The size of the new vector
  * @return vector Double pointer to a new vector
  */
-vector make_vector(unsigned int size);
+vector new_vector(unsigned int size);
 
 /**
  * @brief Function to properly free the memory allocated to the vector
