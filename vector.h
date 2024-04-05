@@ -9,8 +9,10 @@ typedef double* vector;
  * @brief Macro to access the size byte of the vector
  *
  */
+/* #define LENGTH(vec) \
+    (unsigned int)(*( (vector)vec-1 )) */
 #define LENGTH(vec) \
-    (unsigned int)(*( (vector)vec-1 ))
+    *( (unsigned int*)(((char*)vec - VECTOR_SIZE_BYTE))+0 ) 
 
 void add(vector vec1, vector vec2);
 void add_simd(vector vec1, vector vec2);

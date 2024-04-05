@@ -9,12 +9,19 @@
         exit(EXIT_FAILURE);\
     }\
 
+/**
+ * - starting point of 'out' is offset by 'MATRIX_SIZE_BYTE' to make space to
+ *   include the size information
+ *   - and then the size information is set using the 'mem' starting point
+ * - the corresponding columns are set using the starting point of 'out', so 
+ *   addressing out[0] will now be the *starting point* for the first row.
+ */
 #define INIT_MATRIX(mem, out, row, col)\
     do {\
         out = (matrix)( (char*)mem + MATRIX_SIZE_BYTE );\
         *( ((unsigned int*)mem)+0 ) = row;\
         *( ((unsigned int*)mem)+1 ) = col;\
-        for (int i = 0; i < (int)nrows; i++) {\
+        for (int i = 0; i < (int)row; i++) {\
             out[i] = (double*)calloc(col, sizeof(double));\
             CHECK(out[i]);\
         }\
