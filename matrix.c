@@ -87,10 +87,10 @@ void print_matrix(matrix mat) {
     for (int i = 0; i < nrow; i++) {
         printf("[");
         for (int j = 0; j < ncol; j++) {
-            (j == nrow) ? printf("%6.3f", mat[i][j]) :
+            (j == ncol-1) ? printf("%6.3f", mat[i][j]) :
                           printf("%6.3f, ", mat[i][j]);
         }
-        (i == ncol) ? printf("]") :
+        (i == nrow-1) ? printf("]") :
                       printf("]\n ");
     }
     printf("]\n");

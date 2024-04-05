@@ -26,6 +26,14 @@ void add_simd(vector vec1, vector vec2);
 vector new_vector(unsigned int size);
 
 /**
+ * @brief Function to create a new vector from a static array
+ *
+ * @param s_vector Pointer to a static array
+ * @return Double pointer to a new vector
+ */
+vector from_vector(double* s_vector, unsigned int size);
+
+/**
  * @brief Function to properly free the memory allocated to the vector
  *
  * @param vec Vector to free
