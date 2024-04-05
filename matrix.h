@@ -3,7 +3,7 @@
 
 typedef double** matrix;
 
-#define MATRIX_SIZE_BYTE (size_t)(sizeof(double)*2)
+#define MATRIX_SIZE_BYTE (size_t)(sizeof(unsigned int)*2)
 
 /**
  * @brief Macro to access the size byte of the matrix
