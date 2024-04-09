@@ -24,16 +24,6 @@ vector new_vector(unsigned int size) {
     return out;
 }
 
-vector from_vector(double* s_vector, unsigned int size) {
-    void* vec_mem = calloc(1, size*sizeof(double)+VECTOR_SIZE_BYTE);
-    CHECK(vec_mem);
-    vector out;
-    INIT_VECTOR(vec_mem, out, size);
-    for (int i = 0; i < (int)size; i ++)
-        out[i] = s_vector[i];
-    return out;
-}
-
 void add_simd(vector vec1, vector vec2) {
     if (LENGTH(vec1) != LENGTH(vec2)) {
         raise_error(SIMUTIL_DIMENSION_ERROR, "Vector dimension mismatch.");
