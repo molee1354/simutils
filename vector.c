@@ -12,8 +12,8 @@
 
 #define INIT_VECTOR(mem, out, size) \
     do {\
-        out = (vector)( (char*)mem + VECTOR_SIZE_BYTE + VECTOR_IDX_BYTE );\
         *( ((unsigned int*)mem)+0 ) = size;\
+        out = (vector)( (char*)mem + VECTOR_SIZE_BYTE + VECTOR_IDX_BYTE );\
         out--;\
     } while(0)
 
@@ -33,7 +33,7 @@ void add_simd(vector vec1, vector vec2) {
     }
     const int len = LENGTH(vec1);
 #pragma omp for simd
-    for (int i = 0; i < len; i++) {
+    for (int i = 1; i <= len; i++) {
         vec1[i] += vec2[i];
     }
 }
@@ -44,7 +44,7 @@ void add(vector vec1, vector vec2) {
         exit(EXIT_FAILURE);
     }
     const int len = LENGTH(vec1);
-    for (int i = 0; i < len; i++) {
+    for (int i = 1; i <= len; i++) {
         vec1[i] += vec2[i];
     }
 }

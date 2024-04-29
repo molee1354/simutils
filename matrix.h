@@ -5,7 +5,8 @@
 
 typedef double** matrix;
 
-#define MATRIX_SIZE_BYTE (size_t)(sizeof(unsigned int)*2)
+#define MATRIX_SIZE_BYTE  (size_t)(sizeof(unsigned int)*2)
+#define MATRIX_ROW_OFFSET (size_t)(sizeof(double*))
 
 /**
  * @brief Macro to access the size byte of the matrix
@@ -36,7 +37,7 @@ typedef double** matrix;
                     "Unmatching matrix dimensions for matrix creation!\n");\
         for (int i = 0; i < (int)row; i++) {\
             for (int j = 0; j < (int)col; j++) {\
-                targ[i][j] = from[i][j];\
+                targ[i+1][j+1] = from[i][j];\
             }\
         }\
     } while(0)
