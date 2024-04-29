@@ -12,7 +12,7 @@ To use the data structures and math modules provided by `simutils`, simply inclu
 
 ## Vectors and Matrices
 
-`simutils` comes with a two very helpful data structures, `vector` and `matrix`. The advantage of using `vector` and `matrix` instead of single `int*` or double `float**` pointers is that both `vector` and `matrix` carry along their size information (like how you could with a `struct`), while still preserving the ability to be directly indexed (like a array defined from a pointer).
+`simutils` comes with a two very helpful data structures, `vector` and `matrix`. The advantage of using `vector` and `matrix` instead of single `int*` or double `float**` pointers is that both `vector` and `matrix` carry along their size information (like how you could with a `struct`), while still preserving the ability to be directly indexed (like a array defined from a pointer). Also, both `vector` and `matrix` types are **1-indexed** such that representing mathematical models and operations is more intuitive.
 
 ### Using `vector`
 
@@ -26,8 +26,8 @@ int main(int argc, char** argv) {
     vector vec = make_vector(4);
 
     // set the first and last elements to 1
-    vec[0] = 1.;
-    vec[3] = 1.;
+    vec[1] = 1.;
+    vec[4] = 1.;
 
     // print the vector to stdout
     print_vector(vec);
@@ -69,8 +69,8 @@ int main(int argc, char** argv) {
     matrix mat = make_matrix(4, 3);
 
     // set some elements to 1
-    mat[0][1] = 1.;
     mat[1][1] = 1.;
+    mat[4][3] = 1.;
 
     // print the matrix to stdout
     print_matrix(mat);

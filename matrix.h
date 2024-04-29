@@ -1,19 +1,46 @@
 #ifndef SIMUTIL_MATRIX_H
 #define SIMUTIL_MATRIX_H
 
+#include "error.h"
+
 typedef double** matrix;
 
-#define MATRIX_SIZE_BYTE (size_t)(sizeof(unsigned int)*2)
+#define MATRIX_SIZE_BYTE  (size_t)(sizeof(unsigned int)*2)
+#define MATRIX_ROW_OFFSET (size_t)(sizeof(double*))
 
 /**
  * @brief Macro to access the size byte of the matrix
  *
  */
-#define ROWS(mat) \
+/* #define ROWS(mat) \
     *( ((unsigned int*)((char*)mat - MATRIX_SIZE_BYTE))+0 )
 
 #define COLS(mat) \
-    *( ((unsigned int*)((char*)mat - MATRIX_SIZE_BYTE))+1 )
+    *( ((unsigned int*)((char*)mat - MATRIX_SIZE_BYTE))+1 ) */
+
+#define ROWS(mat) \
+    *( (char*)mat - MATRIX_SIZE_BYTE + sizeof(unsigned int)*0 )
+
+#define COLS(mat) \
+    *( (char*)mat - MATRIX_SIZE_BYTE + sizeof(unsigned int)*1 )
+
+/**
+ * @brief Macro to create a new matrix based on an existing stack-allocated
+ * matrix. Assumes that there is already an existing pointer to the matrix
+ * 'targ' that is the same size as the static matrix.
+ *
+ */
+#define FROM_MATRIX(from, targ, row, col)\
+    do {\
+        if (ROWS(targ) != row || COLS(targ) != col)\
+            raise_error(SIMUTIL_DIMENSION_ERROR,\
+                    "Unmatching matrix dimensions for matrix creation!\n");\
+        for (int i = 0; i < (int)row; i++) {\
+            for (int j = 0; j < (int)col; j++) {\
+                targ[i+1][j+1] = from[i][j];\
+            }\
+        }\
+    } while(0)
 
 /**
  * @brief Function to create a new matrix with a given size

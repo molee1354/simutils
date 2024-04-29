@@ -5,6 +5,8 @@ typedef double* vector;
 
 #define VECTOR_SIZE_BYTE (size_t)(sizeof(unsigned int)*1)
 
+#define VECTOR_IDX_BYTE  (size_t)(sizeof(vector)*1)
+
 /**
  * @brief Macro to access the size byte of the vector
  *
@@ -13,6 +15,23 @@ typedef double* vector;
     (unsigned int)(*( (vector)vec-1 )) */
 #define LENGTH(vec) \
     *( (unsigned int*)(((char*)vec - VECTOR_SIZE_BYTE))+0 ) 
+
+/**
+ * @brief Macro to create a new vector based on an existing stack-allocated
+ * vector. Assumes that there is already an existing pointer to the vector
+ * 'targ' that is the same size as the static vector.
+ *
+ */
+#define FROM_VECTOR(from, targ, size)\
+    do {\
+        if (LENGTH(targ) != size)\
+            raise_error(SIMUTIL_DIMENSION_ERROR,\
+                    "Unmatching dimensions for vector creation!\n");\
+        for (int i = 0; i < (int)size; i++) {\
+            targ[i+1] = from[i];\
+        }\
+    } while(0)
+
 
 void add(vector vec1, vector vec2);
 void add_simd(vector vec1, vector vec2);
