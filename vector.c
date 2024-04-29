@@ -91,8 +91,6 @@ void grow_vector(vector* vec, double elem) {
     void* vec_mem = (void*)( (char*)*vec - VECTOR_SIZE_BYTE );
     void* new_vec_mem = realloc(vec_mem, (new_size)*sizeof(double)+VECTOR_SIZE_BYTE);
     CHECK(new_vec_mem);
-    /* vector out = (vector)( (char*)new_vec_mem + VECTOR_SIZE_BYTE );
-    *(out-1) = (double)new_size; */
     vector out;
     INIT_VECTOR(new_vec_mem, out, new_size);
     out[new_size-1] = elem;
