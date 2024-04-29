@@ -5,6 +5,8 @@ typedef double* vector;
 
 #define VECTOR_SIZE_BYTE (size_t)(sizeof(unsigned int)*1)
 
+#define VECTOR_IDX_BYTE  (size_t)(sizeof(vector)*1)
+
 /**
  * @brief Macro to access the size byte of the vector
  *
@@ -26,7 +28,7 @@ typedef double* vector;
             raise_error(SIMUTIL_DIMENSION_ERROR,\
                     "Unmatching dimensions for vector creation!\n");\
         for (int i = 0; i < (int)size; i++) {\
-            targ[i] = from[i];\
+            targ[i+1] = from[i];\
         }\
     } while(0)
 
