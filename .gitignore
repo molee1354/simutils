@@ -9,6 +9,7 @@ main
 # directories
 obj/
 bin/
+lib/
 .vscode/
 
 # file patterns
