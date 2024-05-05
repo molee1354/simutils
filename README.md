@@ -23,7 +23,7 @@ Below is an example usage of the `vector` data structure. The `vector` data stru
 
 int main(int argc, char** argv) {
     // create a 4-element vector of zeros
-    vector vec = make_vector(4);
+    vector vec = new_vector(4);
 
     // set the first and last elements to 1
     vec[1] = 1.;
@@ -66,7 +66,7 @@ Below is an example usage of the `matrix` data structure. The `matrix` data stru
 
 int main(int argc, char** argv) {
     // create a zero matrix with 4 rows and 3 columns.
-    matrix mat = make_matrix(4, 3);
+    matrix mat = new_matrix(4, 3);
 
     // set some elements to 1
     mat[1][1] = 1.;
