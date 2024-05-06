@@ -1,7 +1,4 @@
-#include <stdio.h>
-
 #include "matrix.h"
-#include "error.h"
 
 #define CHECK(p)\
     if (!p) {\
@@ -16,35 +13,34 @@
  * - the corresponding columns are set using the starting point of 'out', so 
  *   addressing out[0] will now be the *starting point* for the first row.
  */
-#define INIT_MATRIX(mem, out, row, col)\
+#define INIT_MATRIX(mem, out, col, row)\
     do {\
-        *( ((unsigned int*)mem)+0 ) = row;\
-        *( ((unsigned int*)mem)+1 ) = col;\
+        *( ((unsigned int*)mem)+0 ) = col;\
+        *( ((unsigned int*)mem)+1 ) = row;\
         out = (matrix)( (char*)mem + MATRIX_SIZE_BYTE );\
         out[1] = (double*)calloc(1, (row*col+1)*sizeof(double));\
         CHECK(out[1]);\
-        for (int i = 2; i <= (int)row; i++) out[i] = out[i-1] + col;\
+        for (int i = 2; i <= (int)col; i++) out[i] = out[i-1] + row;\
     } while (0)
 
-matrix new_matrix(unsigned int nrows, unsigned int ncols) {
-    void* mat_mem = calloc(1, (nrows+1)*sizeof(double*) + MATRIX_SIZE_BYTE);
+matrix new_matrix(unsigned int ncols, unsigned int nrows) {
+    void* mat_mem = calloc(1, (ncols+1)*sizeof(double*) + MATRIX_SIZE_BYTE);
     CHECK(mat_mem);
     matrix out;
-    INIT_MATRIX(mat_mem, out, nrows, ncols);
+    INIT_MATRIX(mat_mem, out, ncols, nrows);
     return out;
 }
 
 void save_matrix(matrix mat, const char *filename) {
     FILE* file = fopen(filename, "wb");
     CHECK(file);
-    const int nrows = ROWS(mat);
-    const int ncols = COLS(mat);
+    const int nrows = (const int)ROWS(mat);
+    const int ncols = (const int)COLS(mat);
 
     fwrite(&nrows, sizeof(nrows), 1, file);
     fwrite(&ncols, sizeof(ncols), 1, file);
-    for (int i = 1; i <= nrows; i++) {
-        fwrite(mat[i], sizeof(double), ncols, file);
-    }
+    for (int i = 1; i <= ncols; i++)
+        fwrite(mat[i], sizeof(double), nrows, file);
     fclose(file);
 }
 
@@ -64,11 +60,11 @@ matrix read_matrix(const char *filename) {
         exit(EXIT_FAILURE);
     }
     matrix out;
-    void* mat_mem = calloc(1, (nrows+1)*sizeof(double*) + MATRIX_SIZE_BYTE);
+    void* mat_mem = calloc(1, (ncols+1)*sizeof(double*) + MATRIX_SIZE_BYTE);
     CHECK(mat_mem);
-    INIT_MATRIX(mat_mem, out, nrows, ncols);
-    for (int i = 1; i <= nrows; i++) {
-        if (!fread(out[i], sizeof(double), ncols, file)) {
+    INIT_MATRIX(mat_mem, out, ncols, nrows);
+    for (int i = 1; i <= ncols; i++) {
+        if (!fread(out[i], sizeof(double), nrows, file)) {
             raise_error(SIMUTIL_ALLOCATE_ERROR,
                     "Problem reading %dth row in matrix.", i);
             fclose(file);
@@ -83,13 +79,14 @@ void print_matrix(matrix mat) {
     const int nrow = ROWS(mat);
     const int ncol = COLS(mat);
     printf("[");
-    for (int i = 1; i <= nrow; i++) {
+    int i,j;
+    for (j = 1; j <= nrow; j++) {
         printf("[");
-        for (int j = 1; j <= ncol; j++) {
-            (j == ncol) ? printf("%6.3f", mat[i][j]) :
+        for (i = 1; i <= ncol; i++) {
+            (i == ncol) ? printf("%6.3f", mat[i][j]) :
                           printf("%6.3f, ", mat[i][j]);
         }
-        (i == nrow) ? printf("]") :
+        (j == nrow) ? printf("]") :
                       printf("]\n ");
     }
     printf("]\n");
@@ -98,7 +95,7 @@ void print_matrix(matrix mat) {
 void free_matrix(matrix mat) {
     free( (char*) mat[1]);
     mat[1] = NULL;
-    void* vec_mem = (void*)( (char*)mat - MATRIX_SIZE_BYTE );
-    free(vec_mem);
-    vec_mem = NULL;
+    void* mat_mem = (void*)( (char*)mat - MATRIX_SIZE_BYTE );
+    free(mat_mem);
+    mat_mem = NULL;
 }
