@@ -20,7 +20,7 @@ all: $(TARGET) | $(LIBDIR)
 
 install: $(TARGET) | $(LIBDIR)
 	@ sudo cp $(TARGET) /usr/lib/$(LIBRARY);\
-	sudo mkdir /usr/include/$(SRCDIR);\
+	sudo mkdir -p /usr/include/$(SRCDIR);\
 	sudo cp $(SRCDIR)/*.h /usr/include/$(SRCDIR);\
 	sudo ldconfig
 
