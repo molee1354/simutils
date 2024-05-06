@@ -1,6 +1,7 @@
 #ifndef SIMUTIL_MATRIX_H
 #define SIMUTIL_MATRIX_H
 
+#include "common.h"
 #include "error.h"
 
 typedef double** matrix;
@@ -12,12 +13,6 @@ typedef double** matrix;
  * @brief Macro to access the size byte of the matrix
  *
  */
-/* #define ROWS(mat) \
-    *( ((unsigned int*)((char*)mat - MATRIX_SIZE_BYTE))+0 )
-
-#define COLS(mat) \
-    *( ((unsigned int*)((char*)mat - MATRIX_SIZE_BYTE))+1 ) */
-
 #define ROWS(mat) \
     *( (char*)mat - MATRIX_SIZE_BYTE + sizeof(unsigned int)*0 )
 

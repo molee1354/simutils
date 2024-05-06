@@ -1,6 +1,9 @@
 #ifndef SIMUTIL_VECTOR_H
 #define SIMUTIL_VECTOR_H
 
+#include "common.h"
+#include "error.h"
+
 typedef double* vector;
 
 #define VECTOR_SIZE_BYTE (size_t)(sizeof(unsigned int)*1)
