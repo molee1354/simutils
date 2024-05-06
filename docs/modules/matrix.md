@@ -38,23 +38,24 @@ Frees the memory allocated for a matrix.
 
 ## Macros
 
-### `ROW(mat)`
+### `ROWS(mat)`
 
 Returns the number of rows in a matrix.
 
 - `mat`: The matrix whose number of rows is to be determined.
 
-### `COL(mat)`
+### `COLS(mat)`
 
 Returns the number of columns in a matrix.
 
 - `mat`: The matrix whose number of columns is to be determined.
 
-### `FROM_MATRIX(mat, row, col)`
+### `FROM_MATRIX(from, targ, row, col)`
 
-Returns a pointer to the element at the specified row and column in a matrix.
+Creates a matrix from a given static 2D array (`double[][]`)
 
-- `mat`: The matrix.
+- `from`: The static matrix from which the elements will be copied from.
+- `targ`: The matrix to which the elements will be copied to.
 - `row`: The row index.
 - `col`: The column index.
 
