@@ -6,15 +6,15 @@
         exit(EXIT_FAILURE);\
     }\
 
-#define INIT_TENSOR(mem, out, col, row, dep)\
+#define INIT_TENSOR(mem, out, row, col, dep)\
     do {\
-        *( ((unsigned int*)mem)+0 ) = col;\
-        *( ((unsigned int*)mem)+1 ) = row;\
+        *( ((unsigned int*)mem)+0 ) = row;\
+        *( ((unsigned int*)mem)+1 ) = col;\
         *( ((unsigned int*)mem)+2 ) = dep;\
         out = (double***)( (char*)mem + TENSOR_SIZE_BYTE );\
-        out[1] = (double**)calloc(1, (row*col+1)*sizeof(double*));\
+        out[1] = (double**)malloc( (row*col+1)*sizeof(double*));\
         CHECK(out[1]);\
-        out[1][1] = (double*)calloc(1, (row*col*dep+1)*sizeof(double));\
+        out[1][1] = (double*)malloc( (row*col*dep+1)*sizeof(double));\
         CHECK(out[1][1]);\
         int i, j;\
         for (j = 2; j <= (int)col; j++) out[1][j] = out[1][j-1] + dep;\
@@ -27,7 +27,8 @@
     } while (0)
 
 tensor new_tensor(unsigned int ncols, unsigned int nrows, unsigned int ndeps) {
-    void* ten_mem = calloc(1, (nrows+1)*sizeof(double**) + TENSOR_SIZE_BYTE);
+    void* ten_mem = malloc( (size_t)((nrows+1)*sizeof(double**)) +
+                           TENSOR_SIZE_BYTE);
     CHECK(ten_mem);
     tensor out;
     INIT_TENSOR(ten_mem, out, ncols, nrows, ndeps);
@@ -96,7 +97,6 @@ void print_tensor(tensor ten) {
     const int ncol = (const int)DIM1(ten); // nx
     const int nrow = (const int)DIM2(ten); // ny
     const int ndep = (const int)DIM3(ten); // nz
-    puts("print_tensor");
     printf("[\n ");
     int i, j, k;
     for (k = 1; k <= ndep; k++) {
@@ -120,8 +120,10 @@ void print_tensor(tensor ten) {
 void free_tensor(tensor ten) {
     free((char*)(ten[1][1]));
     ten[1][1] = NULL;
+
     free((char*)(ten[1]));
     ten[1] = NULL;
+
     void* ten_mem = (void*)( (char*)ten - TENSOR_SIZE_BYTE );
     free(ten_mem);
 }
