@@ -56,7 +56,9 @@ The `matrix` is simply a type alias for a double `double` pointer (`double**`).
 typedef double** matrix;
 ```
 
-Similar to the `vector`, the advantage of using a `matrix` instead of a `double**` is that a `matrix` carries along with it the size information, while still preserving the ability to be directly indexed with double square brackets. Also similar to the `vector`, the `matrix` is also *1-indexed* so that the expression of mathematical models and operations is very intuitive.
+Similar to the `vector`, the advantage of using a `matrix` instead of a `double**` is that a `matrix` carries along with it the size information, while still preserving the ability to be directly indexed with double square brackets.
+
+The `matrix` in `simutils` are *column-major* and *1-indexed*, similar to matrix implentations in programming languages like Matlab, Fortran, and Julia.
 
 ### Usage
 
@@ -75,7 +77,7 @@ Memory for the `matrix` is allocated on the heap, so every `matrix` "constructor
 ##### Constructor
 
 ```C
-// creating a new vector with 3 rows and 4 columns
+// creating a new vector with 3 columns and 4 rows
 matrix mat = new_matrix(3,4);
 
 mat[1][1] = 1.0;

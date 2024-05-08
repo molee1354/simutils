@@ -38,19 +38,19 @@ Frees the memory allocated for a matrix.
 
 ## Macros
 
-### `ROWS(mat)`
-
-Returns the number of rows in a matrix.
-
-- `mat`: The matrix whose number of rows is to be determined.
-
 ### `COLS(mat)`
 
 Returns the number of columns in a matrix.
 
 - `mat`: The matrix whose number of columns is to be determined.
 
-### `FROM_MATRIX(from, targ, row, col)`
+### `ROWS(mat)`
+
+Returns the number of rows in a matrix.
+
+- `mat`: The matrix whose number of rows is to be determined.
+
+### `FROM_MATRIX(from, targ, col, row)`
 
 Creates a matrix from a given static 2D array (`double[][]`)
 
