@@ -12,9 +12,9 @@
         *( ((unsigned int*)mem)+1 ) = col;\
         *( ((unsigned int*)mem)+2 ) = dep;\
         out = (tensor)( (char*)mem + TENSOR_SIZE_BYTE );\
-        out[1] = (double**)malloc((row*col+1)*sizeof(double*));\
+        out[1] = (double**)calloc(1,(row*col+1)*sizeof(double*));\
         CHECK(out[1]);\
-        out[1][1] = (double*)malloc((row*col*dep+1)*sizeof(double));\
+        out[1][1] = (double*)calloc(1,(row*col*dep+1)*sizeof(double));\
         CHECK(out[1][1]);\
         int i, j;\
         for (j = 2; j <= (int)col; j++) out[1][j] = out[1][j-1] + dep;\
@@ -27,7 +27,7 @@
     } while (0)
 
 tensor new_tensor(unsigned int ncols, unsigned int nrows, unsigned int ndeps) {
-    void* ten_mem = malloc((size_t)((ncols+1)*sizeof(double**)) +
+    void* ten_mem = calloc(1, (size_t)((ncols+1)*sizeof(double**)) +
                            TENSOR_SIZE_BYTE);
     CHECK(ten_mem);
     tensor out;
@@ -75,7 +75,7 @@ tensor read_tensor(const char *filename) {
         exit(EXIT_FAILURE);
     }
     tensor out;
-    void* ten_mem = malloc((nrows+1)*sizeof(double*) + TENSOR_SIZE_BYTE);
+    void* ten_mem = calloc(1,(ncols+1)*sizeof(double*) + TENSOR_SIZE_BYTE);
     CHECK(ten_mem);
     INIT_TENSOR(ten_mem, out, ncols, nrows, ndeps);
     for (int i = 1; i <= ncols; i++) {
