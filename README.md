@@ -68,5 +68,3 @@ Once `simutils` is properly installed, make sure to add the `-lsimutils` flag in
 
 For specific instructions on how to use the different `simutils` modules, refer to the [documentations](docs/usage.md).
 
-
-## Inspiration for this 
