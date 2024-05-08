@@ -57,7 +57,7 @@ The `matrix` is simply a type alias for a double `double` pointer (`double**`).
 typedef double** matrix;
 ```
 
-Similar to the `vector`, the advantage of using a `matrix` instead of a `double**` is that a `matrix` carries along with it the size information, while still preserving the ability to be directly indexed with double square brackets.
+Similar to `vector`, the advantage of using a `matrix` instead of a `double**` is that a `matrix` carries along with it the size information, while still preserving the ability to be directly indexed with double square brackets.
 
 The `matrix` in `simutils` are *column-major* and *1-indexed*, similar to matrix implentations in programming languages like Matlab, Fortran, and Julia.
 
@@ -105,7 +105,7 @@ The `tensor` is simply a type alias for a *triple* `double` pointer (`double***`
 typedef double*** tensor;
 ```
 
-Similar to the `vector` and `matrix`, the `tensor` carries along with it the size information, while still preserving the ability to be directly indexed with double square brackets.
+Similar to `vector` and `matrix`, the `tensor` carries along with it the size information, while still preserving the ability to be directly indexed with double square brackets.
 
 The `tensor` in `simutils` are *column-major* and *1-indexed*, similar to tensor implentations in programming languages like Matlab, Fortran, and Julia.
 
