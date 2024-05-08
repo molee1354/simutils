@@ -1,8 +1,4 @@
-#include <stdlib.h>
-#include <stdio.h>
-#include <omp.h>
 #include "vector.h"
-#include "error.h"
 
 #define CHECK(p)\
     if (!p) {\
@@ -18,24 +14,11 @@
     } while(0)
 
 vector new_vector(unsigned int size) {
-    void* vec_mem = calloc(1, size*sizeof(double) + VECTOR_SIZE_BYTE
-                                                  + VECTOR_IDX_BYTE);
+    void* vec_mem = calloc(1, (size+1)*sizeof(double) + VECTOR_SIZE_BYTE);
     CHECK(vec_mem);
     vector out;
     INIT_VECTOR(vec_mem, out, size);
     return out;
-}
-
-void add_simd(vector vec1, vector vec2) {
-    if (LENGTH(vec1) != LENGTH(vec2)) {
-        raise_error(SIMUTIL_DIMENSION_ERROR, "Vector dimension mismatch.");
-        exit(EXIT_FAILURE);
-    }
-    const int len = LENGTH(vec1);
-#pragma omp for simd
-    for (int i = 1; i <= len; i++) {
-        vec1[i] += vec2[i];
-    }
 }
 
 void add(vector vec1, vector vec2) {

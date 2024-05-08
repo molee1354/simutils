@@ -1,15 +1,11 @@
 # individual files
-Makefile
 main.c
 .clangd
 
-# binaries
-main
-
 # directories
 obj/
-bin/
 lib/
+test/
 .vscode/
 
 # file patterns

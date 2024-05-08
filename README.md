@@ -2,99 +2,69 @@
 
 C header files and definitions for common data structures and math modules.
 
+## Why `simutils`?
+
+`simutils` aims to fix some of the common issues encountered when doing scientific programming in C, with its main strengths in the following areas.
+
+### Implicit Size Information
+
+Whenever one starts using abstract data structures in C like arrays and strings, they immediately run into issues with size. The length of an array or string somehow has to be relayed along with data type itself, which many times adds a lot of unnecessary overhead to the program.
+
+All the data structures provided in `simutils` come with macros that access size information. No more messing around with structs, global variables, or extra function parameters.
+
+```C
+// Getting the length of a vector is just a macro call!
+int vector_size = LENGTH(some_vector);
+```
+
+### 1-Indexed Data Structures
+
+While to some, array-like data structures being 1-indexed might appear to be a bit out-of-style, such a scheme allows for the seamless expression of mathematical models within a programming language. The `vector`, `matrix`, and `tensor` data structures proveided in `simutils` are all 1-indexed to fit this purpose.
+
+### Column-major Matrices
+
+Converting between row-major and column-major matrices might be simple conceptually, but one quickly learns that implementing that "simple" change turns out to be a bit more involved than just switching `i` and `j`.
+
+The `matrix` and `tensor` data structures in `simutils` are column-majored. Memory magic is done in the constructors for both the `matrix` and `tensor` so that the data structures can be both represented and indexed in column-major style.
+
+```C
+// Incrementing j will traverse the *column* for both the data structures.
+some_matrix[i][j];
+some_tensor[i][j][k];
+```
+
+A bit more on how these features are achieved can be found in the [documents](/docs/usage.md).
+
+## Installing
+
+Clone this repository with the following command:
+
+```shell
+git clone https://github.com/molee1354/simutils.git
+```
+
+Change into the new `simutils` directory
+
+```shell
+cd simutils
+```
+
+Build the library
+
+```shell
+make
+```
+
+Install the library by copying the compiled shared-object `libsimutils.so` into `/usr/lib/`, and the header files to `/usr/include/`. This step will require elevated privileges as it runs `sudo` commands.
+
+```shell
+make install
+```
 ## Usage
 
-To use the data structures and math modules provided by `simutils`, simply include the `simutils.h` header file in your program.
+To use the data structures and math modules provided by `simutils`, simply include the `simutil/*.h` with the specified header file in your program's include directive.
 
-```c
-#include "simutils.h"
-```
+Once `simutils` is properly installed, make sure to add the `-lsimutils` flag in the linking stage of your code.
 
-## Vectors and Matrices
-
-`simutils` comes with a two very helpful data structures, `vector` and `matrix`. The advantage of using `vector` and `matrix` instead of single `int*` or double `float**` pointers is that both `vector` and `matrix` carry along their size information (like how you could with a `struct`), while still preserving the ability to be directly indexed (like a array defined from a pointer). Also, both `vector` and `matrix` types are **1-indexed** such that representing mathematical models and operations is more intuitive.
-
-### Using `vector`
-
-Below is an example usage of the `vector` data structure. The `vector` data structure holds elements of type `double`.
-
-```c
-#include "simutils.h"
-
-int main(int argc, char** argv) {
-    // create a 4-element vector of zeros
-    vector vec = make_vector(4);
-
-    // set the first and last elements to 1
-    vec[1] = 1.;
-    vec[4] = 1.;
-
-    // print the vector to stdout
-    print_vector(vec);
-
-    // get the vector's size
-    int size = LENGTH(vec);
-
-    // add an element to the vector
-    grow_vector(&vec, 1.);
-
-    // save vector to a file
-    save_vector(vec, "saved_vector.vec");
-
-    // free the memory allocated for the vector
-    free_vector(vec);
-
-    // read a vector from a saved file
-    vector new_vec = read_vector("saved_vector.vec");
-
-    // operate on the read vector
-    print_vector(new_vec);
-
-    // free memory allocated for read vector
-    free_vector(new_vec);
-
-    return 0;
-}
-```
-
-### Using `matrix`
-
-Below is an example usage of the `matrix` data structure. The `matrix` data structure holds elements of type `double`.
-
-```c
-#include "simutils.h"
-
-int main(int argc, char** argv) {
-    // create a zero matrix with 4 rows and 3 columns.
-    matrix mat = make_matrix(4, 3);
-
-    // set some elements to 1
-    mat[1][1] = 1.;
-    mat[4][3] = 1.;
-
-    // print the matrix to stdout
-    print_matrix(mat);
-
-    // get the matrix's size
-    int rows = ROWS(mat);
-    int cols = COLS(mat);
-
-    // save matrix to a file
-    save_matrix(mat, "saved_matrix.mat");
-
-    // free the memory allocated for the matrix
-    free_matrix(mat);
-
-    // read a matrix from a saved file
-    matrix new_mat = read_matrix("saved_matrix.mat");
-
-    // operate on the read matrix
-    print_matrix(new_mat);
-
-    // free memory allocated for read matrix
-    free_matrix(new_mat);
-
-    return 0;
-}
-```
+For specific instructions on how to use the different `simutils` modules, refer to the [documentations](docs/usage.md).
 

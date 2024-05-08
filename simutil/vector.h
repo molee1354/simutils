@@ -1,6 +1,9 @@
 #ifndef SIMUTIL_VECTOR_H
 #define SIMUTIL_VECTOR_H
 
+#include "simutil_includes.h"
+#include "error.h"
+
 typedef double* vector;
 
 #define VECTOR_SIZE_BYTE (size_t)(sizeof(unsigned int)*1)
@@ -11,10 +14,8 @@ typedef double* vector;
  * @brief Macro to access the size byte of the vector
  *
  */
-/* #define LENGTH(vec) \
-    (unsigned int)(*( (vector)vec-1 )) */
 #define LENGTH(vec) \
-    *( (unsigned int*)(((char*)vec - VECTOR_SIZE_BYTE))+0 ) 
+    ((int)(*( (unsigned int*)(((char*)(vec) - VECTOR_SIZE_BYTE))+0 )))
 
 /**
  * @brief Macro to create a new vector based on an existing stack-allocated
@@ -22,13 +23,15 @@ typedef double* vector;
  * 'targ' that is the same size as the static vector.
  *
  */
-#define FROM_VECTOR(from, targ, size)\
+#define FROM_VECTOR(from, _targ, _size)\
     do {\
+        int size = (int)(_size);\
+        vector targ = (_targ);\
         if (LENGTH(targ) != size)\
             raise_error(SIMUTIL_DIMENSION_ERROR,\
-                    "Unmatching dimensions for vector creation!\n");\
+                        "Unmatching dimensions for vector creation!\n");\
         for (int i = 0; i < (int)size; i++) {\
-            targ[i+1] = from[i];\
+            targ[i+1] = (from)[i];\
         }\
     } while(0)
 
