@@ -15,7 +15,7 @@ typedef double* vector;
  *
  */
 #define LENGTH(vec) \
-    (*( (unsigned int*)(((char*)(vec) - VECTOR_SIZE_BYTE))+0 ))
+    ((int)(*( (unsigned int*)(((char*)(vec) - VECTOR_SIZE_BYTE))+0 )))
 
 /**
  * @brief Macro to create a new vector based on an existing stack-allocated
@@ -25,7 +25,7 @@ typedef double* vector;
  */
 #define FROM_VECTOR(from, _targ, _size)\
     do {\
-        unsigned int size = (unsigned int)(_size);\
+        int size = (int)(_size);\
         vector targ = (_targ);\
         if (LENGTH(targ) != size)\
             raise_error(SIMUTIL_DIMENSION_ERROR,\

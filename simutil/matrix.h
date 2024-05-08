@@ -20,11 +20,14 @@ typedef double** matrix;
  * @brief Macro to access the size byte of the matrix
  *
  */
+//  (*( (unsigned int*)(((char*)(vec) - VECTOR_SIZE_BYTE))+0 ))
 #define COLS(mat) \
-    (*( (char*)(mat) - MATRIX_SIZE_BYTE + sizeof(unsigned int)*0 ))
+    ((int)(*( (unsigned int*)(((char*)(mat) - \
+                    MATRIX_SIZE_BYTE + sizeof(unsigned int) * 0)))))
 
 #define ROWS(mat) \
-    (*( (char*)(mat) - MATRIX_SIZE_BYTE + sizeof(unsigned int)*1 ))
+    ((int)(*( (unsigned int*)(((char*)(mat) - \
+                    MATRIX_SIZE_BYTE + sizeof(unsigned int) * 1)))))
 
 /**
  * @brief Macro to create a new matrix based on an existing stack-allocated

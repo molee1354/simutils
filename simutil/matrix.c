@@ -2,7 +2,9 @@
 
 #define CHECK(p)\
     if (!p) {\
-        raise_error(SIMUTIL_ALLOCATE_ERROR,"NULL allocation for matrix!\n");\
+        raise_error(SIMUTIL_ALLOCATE_ERROR,\
+                "[%s:%d] NULL allocation for matrix!\n",\
+                __FILE__, __LINE__);\
         exit(EXIT_FAILURE);\
     }\
 
@@ -15,9 +17,9 @@
  */
 #define INIT_MATRIX(mem, out, col, row)\
     do {\
+        out = (matrix)( (char*)mem + MATRIX_SIZE_BYTE);\
         *( ((unsigned int*)mem)+0 ) = col;\
         *( ((unsigned int*)mem)+1 ) = row;\
-        out = (matrix)( (char*)mem + MATRIX_SIZE_BYTE );\
         out[1] = (double*)calloc(1, (row*col+1)*sizeof(double));\
         CHECK(out[1]);\
         for (int i = 2; i <= (int)col; i++) out[i] = out[i-1] + row;\
@@ -61,6 +63,8 @@ matrix read_matrix(const char *filename) {
     }
     matrix out;
     void* mat_mem = calloc(1, (ncols+1)*sizeof(double*) + MATRIX_SIZE_BYTE);
+    if (mat_mem == NULL)
+        puts("oh no!");
     CHECK(mat_mem);
     INIT_MATRIX(mat_mem, out, ncols, nrows);
     for (int i = 1; i <= ncols; i++) {

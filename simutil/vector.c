@@ -14,8 +14,7 @@
     } while(0)
 
 vector new_vector(unsigned int size) {
-    void* vec_mem = calloc(1, size*sizeof(double) + VECTOR_SIZE_BYTE
-                                                  + VECTOR_IDX_BYTE);
+    void* vec_mem = calloc(1, (size+1)*sizeof(double) + VECTOR_SIZE_BYTE);
     CHECK(vec_mem);
     vector out;
     INIT_VECTOR(vec_mem, out, size);
