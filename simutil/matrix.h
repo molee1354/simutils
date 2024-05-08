@@ -1,7 +1,7 @@
 #ifndef SIMUTIL_MATRIX_H
 #define SIMUTIL_MATRIX_H
 
-#include "common.h"
+#include "simutil_includes.h"
 #include "error.h"
 
 typedef double** matrix;

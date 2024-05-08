@@ -1,7 +1,7 @@
 #ifndef SIMUTIL_VECTOR_H
 #define SIMUTIL_VECTOR_H
 
-#include "common.h"
+#include "simutil_includes.h"
 #include "error.h"
 
 typedef double* vector;

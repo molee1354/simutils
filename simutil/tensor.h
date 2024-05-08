@@ -1,7 +1,7 @@
 #ifndef SIMUTIL_TENSOR_H
 #define SIMUTIL_TENSOR_H
 
-#include "common.h"
+#include "simutil_includes.h"
 #include "error.h"
 
 typedef double*** tensor;
