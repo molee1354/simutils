@@ -37,7 +37,7 @@ void save_vector(vector vec, const char* filename) {
     CHECK(file);
     const unsigned int size = LENGTH(vec);
     fwrite(&size, sizeof(size), 1, file);
-    fwrite(vec, sizeof(double), size, file);
+    fwrite(vec, sizeof(double), size+1, file);
     fclose(file);
 }
 
@@ -50,12 +50,12 @@ vector read_vector(const char *filename) {
         fclose(file);
         exit(EXIT_FAILURE);
     }
-    vector out;
-    void* vec_mem = calloc(1, size*sizeof(double) + VECTOR_SIZE_BYTE
-                                                  + VECTOR_IDX_BYTE);
+    void* vec_mem = calloc(1, (size+1)*sizeof(double) + VECTOR_SIZE_BYTE);
     CHECK(vec_mem);
+    vector out;
     INIT_VECTOR(vec_mem, out, size);
-    if (!fread(out, sizeof(double), size, file)) {
+
+    if (!fread(out, sizeof(double), size+1, file)) {
         raise_error(SIMUTIL_ALLOCATE_ERROR, "Problem reading the 'vec'.");
         fclose(file);
         exit(EXIT_FAILURE);

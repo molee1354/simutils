@@ -47,7 +47,7 @@ void save_tensor(tensor ten, const char *filename) {
     fwrite(&ndeps, sizeof(ndeps), 1, file);
     for (int i = 1; i <= ncols; i++) {
         for (int j = 1; j <= nrows; j++) {
-            fwrite(ten[i][j], sizeof(double), ndeps, file);
+            fwrite(ten[i][j], sizeof(double), ndeps+1, file);
         }
     }
     fclose(file);
@@ -80,7 +80,7 @@ tensor read_tensor(const char *filename) {
     INIT_TENSOR(ten_mem, out, ncols, nrows, ndeps);
     for (int i = 1; i <= ncols; i++) {
         for (int j = 1; j <= nrows; j++) {
-            if (!fread(out[i][j], sizeof(double), ndeps, file)) {
+            if (!fread(out[i][j], sizeof(double), ndeps+1, file)) {
                 raise_error(SIMUTIL_ALLOCATE_ERROR,
                         "Problem reading tensor[%d][%d] vector in tensor.",
                         i, j);

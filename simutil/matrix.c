@@ -42,7 +42,7 @@ void save_matrix(matrix mat, const char *filename) {
     fwrite(&nrows, sizeof(nrows), 1, file);
     fwrite(&ncols, sizeof(ncols), 1, file);
     for (int i = 1; i <= ncols; i++)
-        fwrite(mat[i], sizeof(double), nrows, file);
+        fwrite(mat[i], sizeof(double), nrows+1, file);
     fclose(file);
 }
 
@@ -68,7 +68,7 @@ matrix read_matrix(const char *filename) {
     CHECK(mat_mem);
     INIT_MATRIX(mat_mem, out, ncols, nrows);
     for (int i = 1; i <= ncols; i++) {
-        if (!fread(out[i], sizeof(double), nrows, file)) {
+        if (!fread(out[i], sizeof(double), nrows+1, file)) {
             raise_error(SIMUTIL_ALLOCATE_ERROR,
                     "Problem reading %dth row in matrix.", i);
             fclose(file);
