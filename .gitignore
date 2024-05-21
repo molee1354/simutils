@@ -1,6 +1,7 @@
 # individual files
 main.c
 .clangd
+.clang-format
 
 # directories
 obj/

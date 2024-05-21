@@ -1,4 +1,4 @@
-CC = gcc
+CC = cc
 
 CFLAGS = -Wall -Wextra -Wpedantic -Werror
 CFLAGS += -O3 

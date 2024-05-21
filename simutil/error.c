@@ -3,18 +3,18 @@
 
 static void error_type(error_t err) {
     switch (err) {
-        case SIMUTIL_DIMENSION_ERROR: {
-            fprintf(stderr, "\n\033[1;31mSIMUTIL DIMENSION ERROR:\033[0m\n");
-            break;
-        }
-        case SIMUTIL_ALLOCATE_ERROR: {
-            fprintf(stderr, "\n\033[1;31mSIMUTIL ALLOCATE ERROR:\033[0m\n");
-            break;
-        }
-        default: {
-            fprintf(stderr, "\n\033[1;31mSIMUTIL UNDEFINED ERROR:\033[0m\n");
-            break;
-        }
+    case SIMUTIL_DIMENSION_ERROR: {
+        fprintf(stderr, "\n\033[1;31mSIMUTIL DIMENSION ERROR:\033[0m\n");
+        break;
+    }
+    case SIMUTIL_ALLOCATE_ERROR: {
+        fprintf(stderr, "\n\033[1;31mSIMUTIL ALLOCATE ERROR:\033[0m\n");
+        break;
+    }
+    default: {
+        fprintf(stderr, "\n\033[1;31mSIMUTIL UNDEFINED ERROR:\033[0m\n");
+        break;
+    }
     }
 }
 
