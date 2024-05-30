@@ -122,6 +122,22 @@ void fprint_matrix(FILE *fp, matrix mat);
 #define NOT_SAME_SHAPE(_A, _B)                                                 \
     ((ROWS((_A)) != ROWS((_B)) || COLS((_A)) != COLS((_B))) ? (1) : (0))
 
+#define IS_EQUAL(_A, _B) \
+    (NOT_SAME_SHAPE((_A), (_B)) ? (0) : \
+     ({\
+         int equal = 1;\
+         for (int i = 1; i < COLS((_A)); i++) {\
+            for (int j = 1; j < ROWS((_A)); j++) {\
+                if ((_A)[i][j] != (_B)[i][j]) {\
+                    equal = 0;\
+                    break;\
+                }\
+            }\
+            if (!equal) break;\
+         }\
+         equal;\
+     }))
+
 /**
  * @brief Macro to set two matrices to be equal.
  *
