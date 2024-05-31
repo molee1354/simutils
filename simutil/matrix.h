@@ -142,7 +142,6 @@ void fprint_matrix(FILE* fp, matrix mat);
     }))
 
 #define PARALLEL_FOR \
-    omp_set_num_threads(1);\
     _Pragma("omp parallel for schedule(static,256)")
 
 /**
