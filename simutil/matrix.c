@@ -18,26 +18,25 @@
  */
 #define INIT_MATRIX(mem, out, col, row)                                        \
     do {                                                                       \
-        out = (matrix)((char *)mem + MATRIX_SIZE_BYTE);                        \
-        *(((unsigned int *)mem) + 0) = col;                                    \
-        *(((unsigned int *)mem) + 1) = row;                                    \
-        out[1] = (double *)calloc(1, (row * col + 1) * sizeof(double));        \
+        out = (matrix)((char*)mem + MATRIX_SIZE_BYTE);                         \
+        *(((unsigned int*)mem) + 0) = col;                                     \
+        *(((unsigned int*)mem) + 1) = row;                                     \
+        out[1] = (double*)calloc(1, (row * col + 1) * sizeof(double));         \
         CHECK(out[1]);                                                         \
         for (int i = 2; i <= (int)col; i++)                                    \
             out[i] = out[i - 1] + row;                                         \
     } while (0)
 
 matrix new_matrix(unsigned int ncols, unsigned int nrows) {
-    void *mat_mem =
-        calloc(1, (ncols + 1) * sizeof(double *) + MATRIX_SIZE_BYTE);
+    void* mat_mem = calloc(1, (ncols + 1) * sizeof(double*) + MATRIX_SIZE_BYTE);
     CHECK(mat_mem);
     matrix out;
     INIT_MATRIX(mat_mem, out, ncols, nrows);
     return out;
 }
 
-void save_matrix(matrix mat, const char *filename) {
-    FILE *file = fopen(filename, "wb");
+void save_matrix(matrix mat, const char* filename) {
+    FILE* file = fopen(filename, "wb");
     CHECK(file);
     const int nrows = (const int)ROWS(mat);
     const int ncols = (const int)COLS(mat);
@@ -49,8 +48,8 @@ void save_matrix(matrix mat, const char *filename) {
     fclose(file);
 }
 
-matrix read_matrix(const char *filename) {
-    FILE *file = fopen(filename, "rb");
+matrix read_matrix(const char* filename) {
+    FILE* file = fopen(filename, "rb");
     CHECK(file);
     int nrows;
     if (!fread(&nrows, sizeof(nrows), 1, file)) {
@@ -65,8 +64,7 @@ matrix read_matrix(const char *filename) {
         exit(EXIT_FAILURE);
     }
     matrix out;
-    void *mat_mem =
-        calloc(1, (ncols + 1) * sizeof(double *) + MATRIX_SIZE_BYTE);
+    void* mat_mem = calloc(1, (ncols + 1) * sizeof(double*) + MATRIX_SIZE_BYTE);
     if (mat_mem == NULL)
         puts("oh no!");
     CHECK(mat_mem);
@@ -99,7 +97,7 @@ void print_matrix(matrix mat) {
     printf("]\n");
 }
 
-void fprint_matrix(FILE *fp, matrix mat) {
+void fprint_matrix(FILE* fp, matrix mat) {
     const int nrow = ROWS(mat);
     const int ncol = COLS(mat);
     int i, j;
@@ -113,9 +111,9 @@ void fprint_matrix(FILE *fp, matrix mat) {
 }
 
 void free_matrix(matrix mat) {
-    free((char *)mat[1]);
+    free((char*)mat[1]);
     mat[1] = NULL;
-    void *mat_mem = (void *)((char *)mat - MATRIX_SIZE_BYTE);
+    void* mat_mem = (void*)((char*)mat - MATRIX_SIZE_BYTE);
     free(mat_mem);
     mat_mem = NULL;
 }

@@ -3,6 +3,7 @@ CC = cc
 CFLAGS = -Wall -Wextra -Wpedantic -Werror
 CFLAGS += -O3 
 CFLAGS += -fPIC
+CFLAGS += -fopenmp
 
 LDFLAGS = -lm
 

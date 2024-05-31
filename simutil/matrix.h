@@ -1,13 +1,15 @@
 #ifndef SIMUTIL_MATRIX_H
 #define SIMUTIL_MATRIX_H
 
+#include <omp.h>
+
 #include "error.h"
 #include "simutil_includes.h"
 
-typedef double **matrix;
+typedef double** matrix;
 
 #define MATRIX_SIZE_BYTE (size_t)(sizeof(unsigned int) * 2)
-#define MATRIX_ROW_OFFSET (size_t)(sizeof(double *))
+#define MATRIX_ROW_OFFSET (size_t)(sizeof(double*))
 
 /****************************************************************************/
 /*                                                                          */
@@ -21,12 +23,12 @@ typedef double **matrix;
  */
 //  (*( (unsigned int*)(((char*)(vec) - VECTOR_SIZE_BYTE))+0 ))
 #define COLS(mat)                                                              \
-    ((int)(*((unsigned int *)(((char *)(mat) - MATRIX_SIZE_BYTE +              \
-                               sizeof(unsigned int) * 0)))))
+    ((int)(*((unsigned int*)(((char*)(mat)-MATRIX_SIZE_BYTE +                  \
+                              sizeof(unsigned int) * 0)))))
 
 #define ROWS(mat)                                                              \
-    ((int)(*((unsigned int *)(((char *)(mat) - MATRIX_SIZE_BYTE +              \
-                               sizeof(unsigned int) * 1)))))
+    ((int)(*((unsigned int*)(((char*)(mat)-MATRIX_SIZE_BYTE +                  \
+                              sizeof(unsigned int) * 1)))))
 
 /**
  * @brief Macro to create a new matrix based on an existing stack-allocated
@@ -72,7 +74,7 @@ void free_matrix(matrix mat);
  * @param mat
  * @param filename
  */
-void save_matrix(matrix mat, const char *filename);
+void save_matrix(matrix mat, const char* filename);
 
 /**
  * @brief Function to read a saved matrix from a given filename
@@ -80,7 +82,7 @@ void save_matrix(matrix mat, const char *filename);
  * @param filename
  * @return
  */
-matrix read_matrix(const char *filename);
+matrix read_matrix(const char* filename);
 
 /**
  * @brief Function to print a matrix
@@ -94,7 +96,7 @@ void print_matrix(matrix mat);
  *
  * @param mat Matrix to print
  */
-void fprint_matrix(FILE *fp, matrix mat);
+void fprint_matrix(FILE* fp, matrix mat);
 
 /****************************************************************************/
 /*                                                                          */
@@ -122,21 +124,26 @@ void fprint_matrix(FILE *fp, matrix mat);
 #define NOT_SAME_SHAPE(_A, _B)                                                 \
     ((ROWS((_A)) != ROWS((_B)) || COLS((_A)) != COLS((_B))) ? (1) : (0))
 
-#define IS_EQUAL(_A, _B) \
-    (NOT_SAME_SHAPE((_A), (_B)) ? (0) : \
-     ({\
-         int equal = 1;\
-         for (int i = 1; i < COLS((_A)); i++) {\
-            for (int j = 1; j < ROWS((_A)); j++) {\
-                if ((_A)[i][j] != (_B)[i][j]) {\
-                    equal = 0;\
-                    break;\
-                }\
-            }\
-            if (!equal) break;\
-         }\
-         equal;\
-     }))
+#define IS_EQUAL(_A, _B)                                                       \
+    (NOT_SAME_SHAPE((_A), (_B)) ? (0) : ({                                     \
+        int equal = 1;                                                         \
+        _Pragma("omp parallel for collapse(2)") for (int i = 1;                \
+                                                     i < COLS((_A)); i++) {    \
+            for (int j = 1; j < ROWS((_A)); j++) {                             \
+                if ((_A)[i][j] != (_B)[i][j]) {                                \
+                    equal = 0;                                                 \
+                    break;                                                     \
+                }                                                              \
+            }                                                                  \
+            if (!equal)                                                        \
+                break;                                                         \
+        }                                                                      \
+        equal;                                                                 \
+    }))
+
+#define PARALLEL_FOR \
+    omp_set_num_threads(1);\
+    _Pragma("omp parallel for schedule(static,256)")
 
 /**
  * @brief Macro to set two matrices to be equal.
@@ -156,6 +163,7 @@ void fprint_matrix(FILE *fp, matrix mat);
         }                                                                      \
         const int nrows = (const int)ROWS(targ);                               \
         const int ncols = (const int)COLS(targ);                               \
+        PARALLEL_FOR                                                           \
         for (int i = 1; i <= ncols; i++) {                                     \
             for (int j = 1; j <= nrows; j++) {                                 \
                 targ[i][j] = from[i][j];                                       \
@@ -175,6 +183,7 @@ void fprint_matrix(FILE *fp, matrix mat);
         double constant = (_constant);                                         \
         const int nrows = (const int)ROWS(targ);                               \
         const int ncols = (const int)COLS(targ);                               \
+        PARALLEL_FOR                                                           \
         for (int i = 1; i <= ncols; i++) {                                     \
             for (int j = 1; j <= nrows; j++) {                                 \
                 targ[i][j] = constant;                                         \
@@ -201,6 +210,7 @@ void fprint_matrix(FILE *fp, matrix mat);
         }                                                                      \
         const int nrows = (const int)ROWS(targ);                               \
         const int ncols = (const int)COLS(targ);                               \
+        PARALLEL_FOR                                                           \
         for (int i = 1; i <= ncols; i++) {                                     \
             for (int j = 1; j <= nrows; j++) {                                 \
                 targ[i][j] = targ[i][j] _oper from[i][j];                      \
@@ -230,6 +240,7 @@ void fprint_matrix(FILE *fp, matrix mat);
         }                                                                      \
         const int nrows = (const int)ROWS(targ);                               \
         const int ncols = (const int)COLS(targ);                               \
+        PARALLEL_FOR                                                           \
         for (int i = 1; i <= ncols; i++) {                                     \
             for (int j = 1; j <= nrows; j++) {                                 \
                 targ[i][j] = lhs[i][j] _oper rhs[i][j];                        \
@@ -306,6 +317,7 @@ void fprint_matrix(FILE *fp, matrix mat);
         }                                                                      \
         const int ncols = (const int)COLS(like);                               \
         const int nrows = (const int)ROWS(like);                               \
+        PARALLEL_FOR                                                           \
         for (int j = 1; j <= nrows; j++) {                                     \
             for (int i = 1; i <= ncols; i++) {                                 \
                 double a = targ[i][j];                                         \
@@ -330,6 +342,7 @@ void fprint_matrix(FILE *fp, matrix mat);
         const int ncols = (const int)COLS(targ);                               \
         const int nrows = (const int)ROWS(targ);                               \
         const double constant = (double)(_constant);                           \
+        PARALLEL_FOR                                                           \
         for (int j = 1; j <= nrows; j++) {                                     \
             for (int i = 1; i <= ncols; i++) {                                 \
                 double a = targ[i][j];                                         \
@@ -371,6 +384,7 @@ void fprint_matrix(FILE *fp, matrix mat);
             fprintf(stderr, "\tl,r,u,d : %d,%d,%d,%d\n", l, r, u, d);          \
             exit(EXIT_FAILURE);                                                \
         }                                                                      \
+        PARALLEL_FOR                                                           \
         for (int j = u; j <= d; j++) {                                         \
             for (int i = l; i <= r; i++) {                                     \
                 double a = targ[i][j];                                         \
@@ -404,6 +418,7 @@ void fprint_matrix(FILE *fp, matrix mat);
         }                                                                      \
         const int ncols = (const int)COLS(like);                               \
         const int nrows = (const int)ROWS(like);                               \
+        PARALLEL_FOR                                                           \
         for (int j = 1; j <= nrows; j++) {                                     \
             for (int i = 1; i <= ncols; i++) {                                 \
                 double a = targ[i][j];                                         \

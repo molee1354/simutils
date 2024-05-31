@@ -9,6 +9,6 @@ typedef enum {
     SIMUTIL_ALLOCATE_ERROR,
 } error_t;
 
-void raise_error(error_t err, const char *format, ...);
+void raise_error(error_t err, const char* format, ...);
 
 #endif

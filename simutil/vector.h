@@ -4,7 +4,7 @@
 #include "error.h"
 #include "simutil_includes.h"
 
-typedef double *vector;
+typedef double* vector;
 
 #define VECTOR_SIZE_BYTE (size_t)(sizeof(unsigned int) * 1)
 
@@ -15,7 +15,7 @@ typedef double *vector;
  *
  */
 #define LENGTH(vec)                                                            \
-    ((int)(*((unsigned int *)(((char *)(vec) - VECTOR_SIZE_BYTE)) + 0)))
+    ((int)(*((unsigned int*)(((char*)(vec)-VECTOR_SIZE_BYTE)) + 0)))
 
 /**
  * @brief Macro to create a new vector based on an existing stack-allocated
@@ -65,21 +65,21 @@ void print_vector(vector vec);
  *
  * @param vec Vector to print
  */
-void fprint_vector(FILE *fp, vector vec);
+void fprint_vector(FILE* fp, vector vec);
 
 /**
  * @brief Function to save a vector
  *
  * @param vec
  */
-void save_vector(vector vec, const char *filename);
+void save_vector(vector vec, const char* filename);
 
 /**
  * @brief Function to read the saved vector from a file
  *
  * @param filename
  */
-vector read_vector(const char *filename);
+vector read_vector(const char* filename);
 
 /**
  * @brief Function to get the length of the vector
@@ -94,6 +94,6 @@ unsigned int get_length(vector vec);
  * @param vec
  * @param elem
  */
-void grow_vector(vector *vec, double elem);
+void grow_vector(vector* vec, double elem);
 
 #endif
