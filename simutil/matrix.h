@@ -127,8 +127,7 @@ void fprint_matrix(FILE* fp, matrix mat);
 #define IS_EQUAL(_A, _B)                                                       \
     (NOT_SAME_SHAPE((_A), (_B)) ? (0) : ({                                     \
         int equal = 1;                                                         \
-        _Pragma("omp parallel for collapse(2)") for (int i = 1;                \
-                                                     i < COLS((_A)); i++) {    \
+        for (int i = 1; i < COLS((_A)); i++) {                                 \
             for (int j = 1; j < ROWS((_A)); j++) {                             \
                 if ((_A)[i][j] != (_B)[i][j]) {                                \
                     equal = 0;                                                 \
@@ -141,8 +140,7 @@ void fprint_matrix(FILE* fp, matrix mat);
         equal;                                                                 \
     }))
 
-#define PARALLEL_FOR \
-    _Pragma("omp parallel for schedule(static,256)")
+#define PARALLEL_FOR _Pragma("omp parallel for schedule(static,256)")
 
 /**
  * @brief Macro to set two matrices to be equal.

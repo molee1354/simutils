@@ -1,7 +1,8 @@
 CC = cc
 
 CFLAGS = -Wall -Wextra -Wpedantic -Werror
-CFLAGS += -O3 
+CFLAGS += -O3
+CFLAGS += -march=native -mavx -ftree-vectorize -fopt-info-vec
 CFLAGS += -fPIC
 CFLAGS += -fopenmp
 
