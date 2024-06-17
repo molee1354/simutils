@@ -160,7 +160,6 @@ void fprint_matrix(FILE* fp, matrix mat);
         }                                                                      \
         const int nrows = (const int)ROWS(targ);                               \
         const int ncols = (const int)COLS(targ);                               \
-        PARALLEL_FOR                                                           \
         for (int i = 1; i <= ncols; i++) {                                     \
             for (int j = 1; j <= nrows; j++) {                                 \
                 targ[i][j] = from[i][j];                                       \
@@ -180,7 +179,6 @@ void fprint_matrix(FILE* fp, matrix mat);
         double constant = (_constant);                                         \
         const int nrows = (const int)ROWS(targ);                               \
         const int ncols = (const int)COLS(targ);                               \
-        PARALLEL_FOR                                                           \
         for (int i = 1; i <= ncols; i++) {                                     \
             for (int j = 1; j <= nrows; j++) {                                 \
                 targ[i][j] = constant;                                         \
@@ -207,7 +205,6 @@ void fprint_matrix(FILE* fp, matrix mat);
         }                                                                      \
         const int nrows = (const int)ROWS(targ);                               \
         const int ncols = (const int)COLS(targ);                               \
-        PARALLEL_FOR                                                           \
         for (int i = 1; i <= ncols; i++) {                                     \
             for (int j = 1; j <= nrows; j++) {                                 \
                 targ[i][j] = targ[i][j] _oper from[i][j];                      \
@@ -237,7 +234,6 @@ void fprint_matrix(FILE* fp, matrix mat);
         }                                                                      \
         const int nrows = (const int)ROWS(targ);                               \
         const int ncols = (const int)COLS(targ);                               \
-        PARALLEL_FOR                                                           \
         for (int i = 1; i <= ncols; i++) {                                     \
             for (int j = 1; j <= nrows; j++) {                                 \
                 targ[i][j] = lhs[i][j] _oper rhs[i][j];                        \
@@ -314,7 +310,6 @@ void fprint_matrix(FILE* fp, matrix mat);
         }                                                                      \
         const int ncols = (const int)COLS(like);                               \
         const int nrows = (const int)ROWS(like);                               \
-        PARALLEL_FOR                                                           \
         for (int j = 1; j <= nrows; j++) {                                     \
             for (int i = 1; i <= ncols; i++) {                                 \
                 double a = targ[i][j];                                         \
@@ -339,7 +334,6 @@ void fprint_matrix(FILE* fp, matrix mat);
         const int ncols = (const int)COLS(targ);                               \
         const int nrows = (const int)ROWS(targ);                               \
         const double constant = (double)(_constant);                           \
-        PARALLEL_FOR                                                           \
         for (int j = 1; j <= nrows; j++) {                                     \
             for (int i = 1; i <= ncols; i++) {                                 \
                 double a = targ[i][j];                                         \
@@ -381,7 +375,6 @@ void fprint_matrix(FILE* fp, matrix mat);
             fprintf(stderr, "\tl,r,u,d : %d,%d,%d,%d\n", l, r, u, d);          \
             exit(EXIT_FAILURE);                                                \
         }                                                                      \
-        PARALLEL_FOR                                                           \
         for (int j = u; j <= d; j++) {                                         \
             for (int i = l; i <= r; i++) {                                     \
                 double a = targ[i][j];                                         \
@@ -415,7 +408,6 @@ void fprint_matrix(FILE* fp, matrix mat);
         }                                                                      \
         const int ncols = (const int)COLS(like);                               \
         const int nrows = (const int)ROWS(like);                               \
-        PARALLEL_FOR                                                           \
         for (int j = 1; j <= nrows; j++) {                                     \
             for (int i = 1; i <= ncols; i++) {                                 \
                 double a = targ[i][j];                                         \
