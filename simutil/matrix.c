@@ -1,4 +1,5 @@
 #include "matrix.h"
+#include "error.h"
 #include <stdio.h>
 
 #define CHECK(p)                                                               \
@@ -121,6 +122,148 @@ void* __init_matrix(size_t size, size_t elem_size, size_t ncols, size_t nrows) {
     }
     printf("]\n");
 } */
+#define CAST(type) type value = *((type*)element)
+#define PRINT_FUNC(name, type, fmt)                                            \
+    static void print_##name(FILE* fp, void* element) {                        \
+        CAST(type);                                                            \
+        fprintf(fp, fmt, value);                                               \
+    }
+
+PRINT_FUNC(f32, float, "%.3f")
+PRINT_FUNC(f64, double, "%.3f")
+PRINT_FUNC(f128, long double, "%.3Lf")
+
+static void* dref_32(char* mat_mem, int rows, int i, int j) {
+    size_t e_size = (size_t)(4);
+    /* void* col = (void*)(mat_mem + (i+2)*rows*e_size + e_size*1);
+    void* out = (void*)((char*)col + e_size*(j-2) + e_size*(i+1)); */
+    void* col = (void*)((char*)mat_mem + (i + 1) * rows * e_size + e_size);
+    void* out = (void*)((char*)col + e_size * (j - 1) + e_size * i);
+    return out;
+}
+
+static void* dref_64(char* mat_mem, int rows, int i, int j) {
+    size_t e_size = (size_t)(8);
+    void* col = (void*)((char*)mat_mem + (i + 1) * rows * e_size + e_size);
+    void* out = (void*)((char*)col + e_size * (j - 1) + e_size * i);
+    return out;
+}
+
+static void* dref_128(char* mat_mem, int rows, int i, int j) {
+    size_t e_size = (size_t)(16);
+    /* void* col = (void*)((char*)mat_mem + (i+1)*rows*e_size - e_size);
+    void* out = (void*)((char*)col + e_size*(j-1) + e_size*i); */
+    void* col = (void*)((char*)mat_mem + (i + 1) * rows * e_size + e_size);
+    void* out = (void*)((char*)col + e_size * (j - 1) + e_size * i);
+    return out;
+}
+
+// working version for double
+/* void* col = (void*)(test_mat + (i+1)*rows*e_size + e_size*1);
+void* e = (void*)((char*)col + e_size*(j-1) + e_size*i); */
+
+// working version for long double
+/* void* col = (void*)(test_mat + (i+1)*rows*e_size - e_size*1);
+void* e = (void*)((char*)col + e_size*(j-1) + e_size*i); */
+
+void __print_dmatrix(FILE* fp, void* mat_mem, size_t elem_size) {
+    const int nrow = ROWS(mat_mem);
+    const int ncol = COLS(mat_mem);
+    void (*print_function)(FILE*, void*) = NULL;
+    void* (*dref_function)(char*, int, int, int) = NULL;
+
+    if (elem_size == 4) {
+        print_function = print_f32;
+        dref_function = dref_32;
+    } else if (elem_size == 8) {
+        print_function = print_f64;
+        dref_function = dref_64;
+    } else if (elem_size == 16) {
+        print_function = print_f128;
+        dref_function = dref_128;
+    } else {
+        raise_error(SIMUTIL_TYPE_ERROR, "Unsupported element type...");
+        return;
+    }
+
+    char* base = (char*)mat_mem;
+    if (fp == stdout || fp == stderr)
+        fprintf(fp, "[");
+    int i, j;
+    for (j = 1; j <= nrow; j++) {
+        if (fp == stdout || fp == stderr)
+            fprintf(fp, "[");
+        else
+            fprintf(fp, " ");
+        for (i = 1; i <= ncol; i++) {
+            void* element = dref_function(base, nrow, i, j);
+            print_function(fp, element);
+            if (i != ncol)
+                fprintf(fp, ", ");
+        }
+        if (fp == stdout || fp == stderr)
+            (j == nrow) ? fprintf(fp, "]") : fprintf(fp, "]\n ");
+        else
+            (j == nrow) ? fprintf(fp, " ") : fprintf(fp, "\n ");
+    }
+
+    if (fp == stdout || fp == stderr)
+        fprintf(fp, "]\n");
+    else
+        fprintf(fp, "\n");
+}
+
+PRINT_FUNC(i8, char, "%c")
+PRINT_FUNC(i16, short, "%hi")
+PRINT_FUNC(i32, int, "%d")
+PRINT_FUNC(i64, long, "%ld")
+
+void __print_imatrix(FILE* fp, void* mat_mem, size_t elem_size) {
+    const int nrow = ROWS(mat_mem);
+    const int ncol = COLS(mat_mem);
+    void (*print_function)(FILE*, void*) = NULL;
+
+    if (elem_size == 1) {
+        print_function = print_i8;
+    } else if (elem_size == 2) {
+        print_function = print_i16;
+    } else if (elem_size == 4) {
+        print_function = print_i32;
+    } else if (elem_size == 8) {
+        print_function = print_i64;
+    } else {
+        raise_error(SIMUTIL_TYPE_ERROR, "Unsupported element type...");
+        return;
+    }
+
+    if (fp == stdout || fp == stderr)
+        fprintf(fp, "[");
+
+    char* base = (char*)mat_mem;
+    int i, j;
+    for (j = 1; j <= nrow; j++) {
+        if (fp == stdout || fp == stderr)
+            fprintf(fp, "[");
+        else
+            fprintf(fp, " ");
+        for (i = 1; i <= ncol; i++) {
+            void* element =
+                (void*)(base + ((i - 1) * (nrow + 1) + (j - 1)) * elem_size);
+            print_function(fp, element);
+            if (i != ncol)
+                fprintf(fp, ", ");
+        }
+        if (fp == stdout || fp == stderr)
+            (j == nrow) ? fprintf(fp, "]") : fprintf(fp, "]\n ");
+        else
+            (j == nrow) ? fprintf(fp, " ") : fprintf(fp, "\n ");
+    }
+
+    if (fp == stdout || fp == stderr)
+        fprintf(fp, "]\n");
+    else
+        fprintf(fp, "\n");
+}
 
 /* void fprint_matrix(FILE* fp, matrix mat) {
     const int nrow = ROWS(mat);

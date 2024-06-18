@@ -1,4 +1,5 @@
 #include "vector.h"
+#include "error.h"
 #include <string.h>
 
 #define CHECK(p)                                                               \
@@ -83,6 +84,9 @@ void __print_dvector(FILE* fp, void* vec_mem, size_t elem_size) {
         print_function = print_f64;
     } else if (elem_size == 16) {
         print_function = print_f128;
+    } else {
+        raise_error(SIMUTIL_TYPE_ERROR, "Unsupported element type...");
+        return;
     }
     if (fp == stdout || fp == stderr)
         fprintf(fp, "[");
@@ -93,6 +97,8 @@ void __print_dvector(FILE* fp, void* vec_mem, size_t elem_size) {
     }
     if (fp == stdout || fp == stderr)
         fprintf(fp, "]\n");
+    else
+        fprintf(fp, "\n");
 }
 
 PRINT_FUNC(i8, char, "%c")
@@ -111,6 +117,9 @@ void __print_ivector(FILE* fp, void* vec_mem, size_t elem_size) {
         print_function = print_i32;
     } else if (elem_size == 8) {
         print_function = print_i64;
+    } else {
+        raise_error(SIMUTIL_TYPE_ERROR, "Unsupported element type...");
+        return;
     }
     if (fp == stdout || fp == stderr)
         fprintf(fp, "[");

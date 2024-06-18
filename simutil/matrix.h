@@ -101,6 +101,34 @@ void* __init_matrix(size_t size, size_t elem_size, size_t ncols, size_t nrows);
  * @param mat Matrix to print
  */
 // void print_matrix(matrix mat);
+void __print_dmatrix(FILE* fp, void* mat_mem, size_t elem_size);
+void __print_imatrix(FILE* fp, void* mat_mem, size_t elem_size);
+
+#define print_matrix(vec)                                                      \
+    _Generic((vec),                                                            \
+        matrix(char): __print_imatrix,                                         \
+        matrix(short): __print_imatrix,                                        \
+        matrix(int): __print_imatrix,                                          \
+        matrix(unsigned int): __print_imatrix,                                 \
+        matrix(long): __print_imatrix,                                         \
+        matrix(unsigned long): __print_imatrix,                                \
+        matrix(float): __print_dmatrix,                                        \
+        matrix(double): __print_dmatrix,                                       \
+        matrix(long double): __print_dmatrix)(stdout, (void*)vec,              \
+                                              sizeof(*(vec)))
+
+#define fprint_matrix(fp, vec)                                                 \
+    _Generic((vec),                                                            \
+        matrix(char): __print_imatrix,                                         \
+        matrix(short): __print_imatrix,                                        \
+        matrix(int): __print_imatrix,                                          \
+        matrix(unsigned int): __print_imatrix,                                 \
+        matrix(long): __print_imatrix,                                         \
+        matrix(unsigned long): __print_imatrix,                                \
+        matrix(float): __print_dmatrix,                                        \
+        matrix(double): __print_dmatrix,                                       \
+        matrix(long double): __print_dmatrix)((fp), (void*)vec,                \
+                                              sizeof(*(vec)))
 
 /**
  * @brief Function to print a matrix to a file pointer
