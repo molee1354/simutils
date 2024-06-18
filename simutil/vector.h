@@ -4,18 +4,15 @@
 #include "error.h"
 #include "simutil_includes.h"
 
-typedef double* vector;
+#define vector(T) T*
 
 #define VECTOR_SIZE_BYTE (size_t)(sizeof(unsigned int) * 1)
-
-#define VECTOR_IDX_BYTE (size_t)(sizeof(vector) * 1)
 
 /**
  * @brief Macro to access the size byte of the vector
  *
  */
-#define LENGTH(vec)                                                            \
-    ((int)(*((unsigned int*)(((char*)(vec)-VECTOR_SIZE_BYTE)) + 0)))
+#define LENGTH(vec) ((int)(*((size_t*)(((char*)(vec) - VECTOR_SIZE_BYTE)) + 0)))
 
 /**
  * @brief Macro to create a new vector based on an existing stack-allocated
@@ -23,7 +20,7 @@ typedef double* vector;
  * 'targ' that is the same size as the static vector.
  *
  */
-#define FROM_VECTOR(from, _targ, _size)                                        \
+/* #define FROM_VECTOR(from, _targ, _size) \
     do {                                                                       \
         int size = (int)(_size);                                               \
         vector targ = (_targ);                                                 \
@@ -33,67 +30,77 @@ typedef double* vector;
         for (int i = 0; i < (int)size; i++) {                                  \
             targ[i + 1] = (from)[i];                                           \
         }                                                                      \
+    } while (0) */
+
+void* __init_vector(size_t size, size_t n_elem);
+
+#define new_vector(T, length)                                                  \
+    ((vector(T))__init_vector(                                                 \
+        sizeof(T) * ((size_t)(length) + 1) + sizeof(size_t), (length)))
+
+void __append_element(void** vec_mem, void* elem, size_t elem_size);
+
+#define grow_vector(vec, elem)                                                 \
+    do {                                                                       \
+        __append_element((void**)(vec), &(__typeof__(**(vec))){elem},          \
+                         sizeof(**(vec)));                                     \
     } while (0)
 
-void add(vector vec1, vector vec2);
-void add_simd(vector vec1, vector vec2);
+#define free_vector(vec)                                                       \
+    do {                                                                       \
+        void* vec_mem = (void*)((char*)(vec) - VECTOR_SIZE_BYTE);              \
+        free(vec_mem);                                                         \
+        vec_mem = NULL;                                                        \
+    } while (0)
 
-/**
- * @brief Function to create a new vector with a given size
- *
- * @param size The size of the new vector
- * @return vector Double pointer to a new vector
- */
-vector new_vector(unsigned int size);
+void __print_dvector(FILE* fp, void* vec_mem, size_t elem_size);
+void __print_ivector(FILE* fp, void* vec_mem, size_t elem_size);
 
-/**
- * @brief Function to properly free the memory allocated to the vector
- *
- * @param vec Vector to free
- */
-void free_vector(vector vec);
+#define print_vector(vec)                                                      \
+    _Generic((vec),                                                            \
+        vector(char): __print_ivector,                                         \
+        vector(short): __print_ivector,                                        \
+        vector(int): __print_ivector,                                          \
+        vector(unsigned int): __print_ivector,                                 \
+        vector(long): __print_ivector,                                         \
+        vector(unsigned long): __print_ivector,                                \
+        vector(float): __print_dvector,                                        \
+        vector(double): __print_dvector,                                       \
+        vector(long double): __print_dvector)(stdout, (void*)vec,              \
+                                              sizeof(*(vec)))
 
-/**
- * @brief Function to print a vector
- *
- * @param vec Vector to print
- */
-void print_vector(vector vec);
-
-/**
- * @brief Function to print a vector to a file
- *
- * @param vec Vector to print
- */
-void fprint_vector(FILE* fp, vector vec);
+#define fprint_vector(fp, vec)                                                 \
+    _Generic((vec),                                                            \
+        vector(char): __print_ivector,                                         \
+        vector(short): __print_ivector,                                        \
+        vector(int): __print_ivector,                                          \
+        vector(unsigned int): __print_ivector,                                 \
+        vector(long): __print_ivector,                                         \
+        vector(unsigned long): __print_ivector,                                \
+        vector(float): __print_dvector,                                        \
+        vector(double): __print_dvector,                                       \
+        vector(long double): __print_dvector)((fp), (void*)vec,                \
+                                              sizeof(*(vec)))
 
 /**
  * @brief Function to save a vector
  *
  * @param vec
  */
-void save_vector(vector vec, const char* filename);
+// void save_vector(vector vec, const char* filename);
 
 /**
  * @brief Function to read the saved vector from a file
  *
  * @param filename
  */
-vector read_vector(const char* filename);
+// vector read_vector(const char* filename);
 
 /**
  * @brief Function to get the length of the vector
  *
  * @param vec
  */
-unsigned int get_length(vector vec);
-
-/**
- * @brief Function to add an element to a vector
- *
- * @param vec
- * @param elem
- */
-void grow_vector(vector* vec, double elem);
+// unsigned int get_length(vector vec);
 
 #endif

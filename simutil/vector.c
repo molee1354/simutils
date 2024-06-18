@@ -1,4 +1,5 @@
 #include "vector.h"
+#include <string.h>
 
 #define CHECK(p)                                                               \
     if (!p) {                                                                  \
@@ -6,42 +7,24 @@
         exit(EXIT_FAILURE);                                                    \
     }
 
-#define INIT_VECTOR(mem, out, size)                                            \
-    do {                                                                       \
-        *(((unsigned int*)mem) + 0) = size;                                    \
-        out = (vector)((char*)mem + VECTOR_SIZE_BYTE + VECTOR_IDX_BYTE);       \
-        out--;                                                                 \
-    } while (0)
-
-vector new_vector(unsigned int size) {
-    void* vec_mem = calloc(1, (size + 1) * sizeof(double) + VECTOR_SIZE_BYTE);
-    CHECK(vec_mem);
-    vector out;
-    INIT_VECTOR(vec_mem, out, size);
-    return out;
+void* __init_vector(size_t size, size_t n_elem) {
+    void* vec_start = calloc(1, size);
+    CHECK(vec_start);
+    *(((size_t*)vec_start) + 0) = n_elem;
+    char* out = (char*)vec_start;
+    return (void*)(out + VECTOR_SIZE_BYTE);
 }
 
-void add(vector vec1, vector vec2) {
-    if (LENGTH(vec1) != LENGTH(vec2)) {
-        raise_error(SIMUTIL_DIMENSION_ERROR, "Vector dimension mismatch.");
-        exit(EXIT_FAILURE);
-    }
-    const int len = LENGTH(vec1);
-    for (int i = 1; i <= len; i++) {
-        vec1[i] += vec2[i];
-    }
-}
-
-void save_vector(vector vec, const char* filename) {
+/* void save_vector(vector vec, const char* filename) {
     FILE* file = fopen(filename, "wb");
     CHECK(file);
     const unsigned int size = LENGTH(vec);
     fwrite(&size, sizeof(size), 1, file);
     fwrite(vec, sizeof(double), size + 1, file);
     fclose(file);
-}
+} */
 
-vector read_vector(const char* filename) {
+/* vector read_vector(const char* filename) {
     FILE* file = fopen(filename, "rb");
     CHECK(file);
     unsigned int size;
@@ -62,43 +45,80 @@ vector read_vector(const char* filename) {
     }
     fclose(file);
     return out;
+} */
+
+void __append_element(void** vec_mem, void* elem, size_t elem_size) {
+    CHECK(*vec_mem);
+    const int new_length = LENGTH(*vec_mem) + 1;
+    void* vec_start = (void*)((char*)*vec_mem - VECTOR_SIZE_BYTE);
+    void* vec_start_new = realloc(vec_start, new_length * elem_size +
+                                                 VECTOR_SIZE_BYTE + elem_size);
+    CHECK(vec_start_new);
+    *(((size_t*)vec_start_new) + 0) = new_length;
+    memcpy((void*)((char*)vec_start_new + new_length * elem_size +
+                   VECTOR_SIZE_BYTE),
+           elem, elem_size);
+    char* out = (char*)vec_start_new;
+    *(vec_mem) = (void*)(out + VECTOR_SIZE_BYTE);
 }
 
-void free_vector(vector vec) {
-    void* vec_mem = (void*)((char*)vec - VECTOR_SIZE_BYTE);
-    free(vec_mem);
-    vec_mem = NULL;
-}
+#define CAST(type) type value = *((type*)element)
 
-void grow_vector(vector* vec, double elem) {
-    CHECK(vec);
-    const unsigned int new_size = LENGTH(*vec) + 1;
-    void* vec_mem = (void*)((char*)*vec - VECTOR_SIZE_BYTE);
-    void* new_vec_mem =
-        realloc(vec_mem, (new_size) * sizeof(double) + VECTOR_SIZE_BYTE +
-                             VECTOR_IDX_BYTE);
-    CHECK(new_vec_mem);
-    vector out;
-    INIT_VECTOR(new_vec_mem, out, new_size);
-    out[new_size] = elem;
-    *vec = out;
-}
-
-unsigned int get_length(vector vec) { return LENGTH(vec); }
-
-void print_vector(vector vec) {
-    const int size = (int)LENGTH(vec);
-    printf("[");
-    for (int i = 1; i <= size; i++) {
-        i != size ? printf("%g, ", vec[i]) : printf("%g", vec[i]);
+#define PRINT_FUNC(name, type, fmt)                                            \
+    static void print_##name(FILE* fp, void* element) {                        \
+        CAST(type);                                                            \
+        fprintf(fp, fmt, value);                                               \
     }
-    printf("]\n");
+
+PRINT_FUNC(f32, float, "%.3f")
+PRINT_FUNC(f64, double, "%.3f")
+PRINT_FUNC(f128, long double, "%.3Lf")
+
+void __print_dvector(FILE* fp, void* vec_mem, size_t elem_size) {
+    const int size = (int)LENGTH(vec_mem);
+    void (*print_function)(FILE*, void*) = NULL;
+    if (elem_size == 4) {
+        print_function = print_f32;
+    } else if (elem_size == 8) {
+        print_function = print_f64;
+    } else if (elem_size == 16) {
+        print_function = print_f128;
+    }
+    if (fp == stdout || fp == stderr)
+        fprintf(fp, "[");
+    for (int i = 1; i <= size; i++) {
+        print_function(fp, (char*)vec_mem + i * elem_size);
+        if (i != size)
+            fprintf(fp, ", ");
+    }
+    if (fp == stdout || fp == stderr)
+        fprintf(fp, "]\n");
 }
 
-void fprint_vector(FILE* fp, vector vec) {
-    const int size = (int)LENGTH(vec);
-    for (int i = 1; i <= size; i++) {
-        i != size ? fprintf(fp, "%.3f, ", vec[i]) : fprintf(fp, "%.3f", vec[i]);
+PRINT_FUNC(i8, char, "%c")
+PRINT_FUNC(i16, short, "%hi")
+PRINT_FUNC(i32, int, "%d")
+PRINT_FUNC(i64, long, "%ld")
+
+void __print_ivector(FILE* fp, void* vec_mem, size_t elem_size) {
+    const int size = (int)LENGTH(vec_mem);
+    void (*print_function)(FILE*, void*) = NULL;
+    if (elem_size == 1) {
+        print_function = print_i8;
+    } else if (elem_size == 2) {
+        print_function = print_i16;
+    } else if (elem_size == 4) {
+        print_function = print_i32;
+    } else if (elem_size == 8) {
+        print_function = print_i64;
     }
-    fprintf(fp, "\n");
+    if (fp == stdout || fp == stderr)
+        fprintf(fp, "[");
+    for (int i = 1; i <= size; i++) {
+        print_function(fp, (char*)vec_mem + i * elem_size);
+        if (i != size)
+            fprintf(fp, ", ");
+    }
+    if (fp == stdout || fp == stderr)
+        fprintf(fp, "]\n");
 }

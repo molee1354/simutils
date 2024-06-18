@@ -23,11 +23,11 @@ typedef double** matrix;
  */
 //  (*( (unsigned int*)(((char*)(vec) - VECTOR_SIZE_BYTE))+0 ))
 #define COLS(mat)                                                              \
-    ((int)(*((unsigned int*)(((char*)(mat)-MATRIX_SIZE_BYTE +                  \
+    ((int)(*((unsigned int*)(((char*)(mat) - MATRIX_SIZE_BYTE +                \
                               sizeof(unsigned int) * 0)))))
 
 #define ROWS(mat)                                                              \
-    ((int)(*((unsigned int*)(((char*)(mat)-MATRIX_SIZE_BYTE +                  \
+    ((int)(*((unsigned int*)(((char*)(mat) - MATRIX_SIZE_BYTE +                \
                               sizeof(unsigned int) * 1)))))
 
 /**
