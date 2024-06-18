@@ -6,7 +6,7 @@
 
 #define vector(T) T*
 
-#define VECTOR_SIZE_BYTE (size_t)(sizeof(unsigned int) * 1)
+#define VECTOR_SIZE_BYTE (size_t)(sizeof(size_t) * 1)
 
 /**
  * @brief Macro to access the size byte of the vector
@@ -36,7 +36,7 @@ void* __init_vector(size_t size, size_t n_elem);
 
 #define new_vector(T, length)                                                  \
     ((vector(T))__init_vector(                                                 \
-        sizeof(T) * ((size_t)(length) + 1) + sizeof(size_t), (length)))
+        sizeof(T) * ((size_t)(length) + 1) + VECTOR_SIZE_BYTE, (length)))
 
 void __append_element(void** vec_mem, void* elem, size_t elem_size);
 

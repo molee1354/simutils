@@ -27,15 +27,40 @@
             out[i] = out[i - 1] + row;                                         \
     } while (0)
 
-matrix new_matrix(unsigned int ncols, unsigned int nrows) {
+/* matrix new_matrix(unsigned int ncols, unsigned int nrows) {
     void* mat_mem = calloc(1, (ncols + 1) * sizeof(double*) + MATRIX_SIZE_BYTE);
     CHECK(mat_mem);
     matrix out;
     INIT_MATRIX(mat_mem, out, ncols, nrows);
     return out;
+} */
+
+/* void* __init_matrix(size_t size, size_t elem_size, size_t ncols, size_t
+nrows) { void* mat_start = calloc(1, size); CHECK(mat_start);
+    *(((size_t*)mat_start) + 0) = ncols;
+    *(((size_t*)mat_start) + 1) = nrows;
+    printf("elem_size = %zu\n", elem_size);
+    char** out = (char**)((char*)mat_start + MATRIX_SIZE_BYTE);
+    out[1] = calloc(1, (nrows * ncols + 1) * elem_size);
+    CHECK(out[1]);
+    for (int i = 2; i <= (int)ncols; i++)
+        out[i] = out[i-1] + nrows;
+    return (void*)out;
+} */
+
+void* __init_matrix(size_t size, size_t elem_size, size_t ncols, size_t nrows) {
+    void* mat_start = calloc(1, size);
+    CHECK(mat_start);
+    *((size_t*)mat_start + 0) = ncols;
+    *((size_t*)mat_start + 1) = nrows;
+    char** out = (char**)((char*)mat_start + MATRIX_SIZE_BYTE);
+    char* data_start = (char*)(out + (ncols + 1));
+    for (size_t i = 1; i <= ncols; i++)
+        out[i] = data_start + i * (nrows + 1) * elem_size;
+    return (void*)out;
 }
 
-void save_matrix(matrix mat, const char* filename) {
+/* void save_matrix(matrix mat, const char* filename) {
     FILE* file = fopen(filename, "wb");
     CHECK(file);
     const int nrows = (const int)ROWS(mat);
@@ -46,9 +71,9 @@ void save_matrix(matrix mat, const char* filename) {
     for (int i = 1; i <= ncols; i++)
         fwrite(mat[i], sizeof(double), nrows + 1, file);
     fclose(file);
-}
+} */
 
-matrix read_matrix(const char* filename) {
+/* matrix read_matrix(const char* filename) {
     FILE* file = fopen(filename, "rb");
     CHECK(file);
     int nrows;
@@ -79,9 +104,9 @@ matrix read_matrix(const char* filename) {
     }
     fclose(file);
     return out;
-}
+} */
 
-void print_matrix(matrix mat) {
+/* void print_matrix(matrix mat) {
     const int nrow = ROWS(mat);
     const int ncol = COLS(mat);
     printf("[");
@@ -95,9 +120,9 @@ void print_matrix(matrix mat) {
         (j == nrow) ? printf("]") : printf("]\n ");
     }
     printf("]\n");
-}
+} */
 
-void fprint_matrix(FILE* fp, matrix mat) {
+/* void fprint_matrix(FILE* fp, matrix mat) {
     const int nrow = ROWS(mat);
     const int ncol = COLS(mat);
     int i, j;
@@ -108,12 +133,12 @@ void fprint_matrix(FILE* fp, matrix mat) {
         }
         fprintf(fp, "\n");
     }
-}
+} */
 
-void free_matrix(matrix mat) {
+/* void free_matrix(matrix mat) {
     free((char*)mat[1]);
     mat[1] = NULL;
     void* mat_mem = (void*)((char*)mat - MATRIX_SIZE_BYTE);
     free(mat_mem);
     mat_mem = NULL;
-}
+} */

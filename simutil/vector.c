@@ -11,8 +11,8 @@ void* __init_vector(size_t size, size_t n_elem) {
     void* vec_start = calloc(1, size);
     CHECK(vec_start);
     *(((size_t*)vec_start) + 0) = n_elem;
-    char* out = (char*)vec_start;
-    return (void*)(out + VECTOR_SIZE_BYTE);
+    char* out = (char*)vec_start + VECTOR_SIZE_BYTE;
+    return (void*)out;
 }
 
 /* void save_vector(vector vec, const char* filename) {

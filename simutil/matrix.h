@@ -6,9 +6,9 @@
 #include "error.h"
 #include "simutil_includes.h"
 
-typedef double** matrix;
+#define matrix(T) T**
 
-#define MATRIX_SIZE_BYTE (size_t)(sizeof(unsigned int) * 2)
+#define MATRIX_SIZE_BYTE (size_t)(sizeof(size_t) * 2)
 #define MATRIX_ROW_OFFSET (size_t)(sizeof(double*))
 
 /****************************************************************************/
@@ -23,12 +23,12 @@ typedef double** matrix;
  */
 //  (*( (unsigned int*)(((char*)(vec) - VECTOR_SIZE_BYTE))+0 ))
 #define COLS(mat)                                                              \
-    ((int)(*((unsigned int*)(((char*)(mat) - MATRIX_SIZE_BYTE +                \
-                              sizeof(unsigned int) * 0)))))
+    ((int)(*(                                                                  \
+        (size_t*)(((char*)(mat) - MATRIX_SIZE_BYTE + sizeof(size_t) * 0)))))
 
 #define ROWS(mat)                                                              \
-    ((int)(*((unsigned int*)(((char*)(mat) - MATRIX_SIZE_BYTE +                \
-                              sizeof(unsigned int) * 1)))))
+    ((int)(*(                                                                  \
+        (size_t*)(((char*)(mat) - MATRIX_SIZE_BYTE + sizeof(size_t) * 1)))))
 
 /**
  * @brief Macro to create a new matrix based on an existing stack-allocated
@@ -36,7 +36,7 @@ typedef double** matrix;
  * 'targ' that is the same size as the static matrix.
  *
  */
-#define FROM_MATRIX(from, _targ, _col, _row)                                   \
+/* #define FROM_MATRIX(from, _targ, _col, _row) \
     do {                                                                       \
         const int row = (const int)(_row);                                     \
         const int col = (const int)(_col);                                     \
@@ -50,7 +50,7 @@ typedef double** matrix;
                 targ[j + 1][i + 1] = (from)[i][j];                             \
             }                                                                  \
         }                                                                      \
-    } while (0)
+    } while (0) */
 
 /**
  * @brief Function to create a new matrix with a given size
@@ -58,15 +58,26 @@ typedef double** matrix;
  * @param size The size of the new matrix
  * @return matrix Double pointer to a new matrix
  */
-matrix new_matrix(unsigned int ncols, unsigned int nrows);
 // matrix new_matrix(unsigned int ncols, unsigned int nrows);
+void* __init_matrix(size_t size, size_t elem_size, size_t ncols, size_t nrows);
+
+#define new_matrix(T, ncols, nrows)                                            \
+    ((matrix(T))__init_matrix(((ncols + 1) * sizeof(T*) +                      \
+                               (ncols + 1) * (nrows + 1) * sizeof(T) +         \
+                               MATRIX_SIZE_BYTE),                              \
+                              sizeof(T), ncols, nrows))
 
 /**
  * @brief Function to properly free the memory allocated to the matrix
  *
- * @param mat Vector to free
+ * @param mat Matrix to free
  */
-void free_matrix(matrix mat);
+#define free_matrix(mat)                                                       \
+    do {                                                                       \
+        void* mat_start = (void*)((char*)(mat) - MATRIX_SIZE_BYTE);            \
+        free(mat_start);                                                       \
+        mat_start = NULL;                                                      \
+    } while (0)
 
 /**
  * @brief Function to save a matrix into a file
@@ -74,7 +85,7 @@ void free_matrix(matrix mat);
  * @param mat
  * @param filename
  */
-void save_matrix(matrix mat, const char* filename);
+// void save_matrix(matrix mat, const char* filename);
 
 /**
  * @brief Function to read a saved matrix from a given filename
@@ -82,21 +93,21 @@ void save_matrix(matrix mat, const char* filename);
  * @param filename
  * @return
  */
-matrix read_matrix(const char* filename);
+// matrix read_matrix(const char* filename);
 
 /**
  * @brief Function to print a matrix
  *
  * @param mat Matrix to print
  */
-void print_matrix(matrix mat);
+// void print_matrix(matrix mat);
 
 /**
  * @brief Function to print a matrix to a file pointer
  *
  * @param mat Matrix to print
  */
-void fprint_matrix(FILE* fp, matrix mat);
+// void fprint_matrix(FILE* fp, matrix mat);
 
 /****************************************************************************/
 /*                                                                          */
