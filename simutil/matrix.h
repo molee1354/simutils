@@ -100,35 +100,40 @@ void* __init_matrix(size_t size, size_t elem_size, size_t ncols, size_t nrows);
  *
  * @param mat Matrix to print
  */
-// void print_matrix(matrix mat);
-void __print_dmatrix(FILE* fp, void* mat_mem, size_t elem_size);
-void __print_imatrix(FILE* fp, void* mat_mem, size_t elem_size);
 
-#define print_matrix(vec)                                                      \
-    _Generic((vec),                                                            \
-        matrix(char): __print_imatrix,                                         \
-        matrix(short): __print_imatrix,                                        \
-        matrix(int): __print_imatrix,                                          \
-        matrix(unsigned int): __print_imatrix,                                 \
-        matrix(long): __print_imatrix,                                         \
-        matrix(unsigned long): __print_imatrix,                                \
-        matrix(float): __print_dmatrix,                                        \
-        matrix(double): __print_dmatrix,                                       \
-        matrix(long double): __print_dmatrix)(stdout, (void*)vec,              \
-                                              sizeof(*(vec)))
+// printing floating-point numbers
+void __print_float(FILE* fp, matrix(float) mat);
+void __print_double(FILE* fp, matrix(double) mat);
+void __print_long_double(FILE* fp, matrix(long double) mat);
 
-#define fprint_matrix(fp, vec)                                                 \
-    _Generic((vec),                                                            \
-        matrix(char): __print_imatrix,                                         \
-        matrix(short): __print_imatrix,                                        \
-        matrix(int): __print_imatrix,                                          \
-        matrix(unsigned int): __print_imatrix,                                 \
-        matrix(long): __print_imatrix,                                         \
-        matrix(unsigned long): __print_imatrix,                                \
-        matrix(float): __print_dmatrix,                                        \
-        matrix(double): __print_dmatrix,                                       \
-        matrix(long double): __print_dmatrix)((fp), (void*)vec,                \
-                                              sizeof(*(vec)))
+// printing integers / chars
+void __print_char(FILE* fp, matrix(char) mat);
+void __print_int(FILE* fp, matrix(int) mat);
+void __print_uint(FILE* fp, matrix(unsigned int) mat);
+void __print_long(FILE* fp, matrix(long) mat);
+void __print_ulong(FILE* fp, matrix(unsigned long) mat);
+
+#define print_matrix(mat)                                                      \
+    _Generic((mat),                                                            \
+        matrix(char): __print_char,                                            \
+        matrix(int): __print_int,                                              \
+        matrix(unsigned int): __print_uint,                                    \
+        matrix(long): __print_long,                                            \
+        matrix(unsigned long): __print_ulong,                                 \
+        matrix(float): __print_float,                                          \
+        matrix(double): __print_double,                                        \
+        matrix(long double): __print_long_double)(stdout, mat)
+
+#define fprint_matrix(fp, mat)                                                 \
+    _Generic((mat),                                                            \
+        matrix(char): __print_char,                                            \
+        matrix(int): __print_int,                                              \
+        matrix(unsigned int): __print_uint,                                    \
+        matrix(long): __print_long,                                            \
+        matrix(unsigned long): __print_ulong,                                 \
+        matrix(float): __print_float,                                          \
+        matrix(double): __print_double,                                        \
+        matrix(long double): __print_long_double)(fp, mat)
 
 /**
  * @brief Function to print a matrix to a file pointer
