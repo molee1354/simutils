@@ -64,7 +64,7 @@ void __append_element(void** vec_mem, void* elem, size_t elem_size) {
 }
 
 #define PRINT_FUNC(name, type, fmt)                                            \
-    void print_##name##_v(FILE* fp, type vec) {                                \
+    void __print##name##_v(FILE* fp, type vec) {                                \
         const int length = LENGTH(vec);                                        \
         if (fp == stdout || fp == stderr)                                      \
             fprintf(fp, "[");                                                  \
