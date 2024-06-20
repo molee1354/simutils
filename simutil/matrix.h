@@ -21,7 +21,6 @@
  * @brief Macro to access the size byte of the matrix
  *
  */
-//  (*( (unsigned int*)(((char*)(vec) - VECTOR_SIZE_BYTE))+0 ))
 #define COLS(mat)                                                              \
     ((int)(*(                                                                  \
         (size_t*)(((char*)(mat) - MATRIX_SIZE_BYTE + sizeof(size_t) * 0)))))
@@ -31,36 +30,22 @@
         (size_t*)(((char*)(mat) - MATRIX_SIZE_BYTE + sizeof(size_t) * 1)))))
 
 /**
- * @brief Macro to create a new matrix based on an existing stack-allocated
- * matrix. Assumes that there is already an existing pointer to the matrix
- * 'targ' that is the same size as the static matrix.
+ * @brief Function to initialize the memory needed for a new matrix.
  *
+ * @param size The size of the total memory block used by the matrix
+ * @param elem_size The size of a single element in the matrix
+ * @param ncols The number of columns in the matrix
+ * @param nrows The number of rows in the matrix
  */
-/* #define FROM_MATRIX(from, _targ, _col, _row) \
-    do {                                                                       \
-        const int row = (const int)(_row);                                     \
-        const int col = (const int)(_col);                                     \
-        matrix targ = (_targ);                                                 \
-        if (ROWS(targ) != row || COLS(targ) != col)                            \
-            raise_error(                                                       \
-                SIMUTIL_DIMENSION_ERROR,                                       \
-                "Unmatching matrix dimensions for matrix creation!\n");        \
-        for (int i = 0; i < row; i++) {                                        \
-            for (int j = 0; j < col; j++) {                                    \
-                targ[j + 1][i + 1] = (from)[i][j];                             \
-            }                                                                  \
-        }                                                                      \
-    } while (0) */
-
-/**
- * @brief Function to create a new matrix with a given size
- *
- * @param size The size of the new matrix
- * @return matrix Double pointer to a new matrix
- */
-// matrix new_matrix(unsigned int ncols, unsigned int nrows);
 void* __init_matrix(size_t size, size_t elem_size, size_t ncols, size_t nrows);
 
+/**
+ * @brief Macro to create a new matrix of type T
+ *
+ * @param T Type of matrix element
+ * @param ncols Number of columns
+ * @param nrows Number of rows
+ */
 #define new_matrix(T, ncols, nrows)                                            \
     ((matrix(T))__init_matrix(((ncols + 1) * sizeof(T*) +                      \
                                (ncols + 1) * (nrows + 1) * sizeof(T) +         \
@@ -68,7 +53,7 @@ void* __init_matrix(size_t size, size_t elem_size, size_t ncols, size_t nrows);
                               sizeof(T), ncols, nrows))
 
 /**
- * @brief Function to properly free the memory allocated to the matrix
+ * @brief Macro to properly free the memory allocated to the matrix
  *
  * @param mat Matrix to free
  */
@@ -79,61 +64,42 @@ void* __init_matrix(size_t size, size_t elem_size, size_t ncols, size_t nrows);
         mat_start = NULL;                                                      \
     } while (0)
 
-/**
- * @brief Function to save a matrix into a file
- *
- * @param mat
- * @param filename
- */
-// void save_matrix(matrix mat, const char* filename);
-
-/**
- * @brief Function to read a saved matrix from a given filename
- *
- * @param filename
- * @return
- */
-// matrix read_matrix(const char* filename);
-
-/**
- * @brief Function to print a matrix
- *
- * @param mat Matrix to print
- */
-
 // printing floating-point numbers
-void __print_float(FILE* fp, matrix(float) mat);
-void __print_double(FILE* fp, matrix(double) mat);
-void __print_long_double(FILE* fp, matrix(long double) mat);
+void __print_float_m(FILE* fp, matrix(float) mat);
+void __print_double_m(FILE* fp, matrix(double) mat);
+void __print_long_double_m(FILE* fp, matrix(long double) mat);
 
 // printing integers / chars
-void __print_char(FILE* fp, matrix(char) mat);
-void __print_int(FILE* fp, matrix(int) mat);
-void __print_uint(FILE* fp, matrix(unsigned int) mat);
-void __print_long(FILE* fp, matrix(long) mat);
-void __print_ulong(FILE* fp, matrix(unsigned long) mat);
+void __print_char_m(FILE* fp, matrix(char) mat);
+void __print_short_m(FILE* fp, matrix(short) mat);
+void __print_int_m(FILE* fp, matrix(int) mat);
+void __print_uint_m(FILE* fp, matrix(unsigned int) mat);
+void __print_long_m(FILE* fp, matrix(long) mat);
+void __print_ulong_m(FILE* fp, matrix(unsigned long) mat);
 
 #define print_matrix(mat)                                                      \
     _Generic((mat),                                                            \
-        matrix(char): __print_char,                                            \
-        matrix(int): __print_int,                                              \
-        matrix(unsigned int): __print_uint,                                    \
-        matrix(long): __print_long,                                            \
-        matrix(unsigned long): __print_ulong,                                 \
-        matrix(float): __print_float,                                          \
-        matrix(double): __print_double,                                        \
-        matrix(long double): __print_long_double)(stdout, mat)
+        matrix(char): __print_char_m,                                          \
+        matrix(short): __print_short_m,                                        \
+        matrix(int): __print_int_m,                                            \
+        matrix(unsigned int): __print_uint_m,                                  \
+        matrix(long): __print_long_m,                                          \
+        matrix(unsigned long): __print_ulong_m,                                \
+        matrix(float): __print_float_m,                                        \
+        matrix(double): __print_double_m,                                      \
+        matrix(long double): __print_long_double_m)(stdout, mat)
 
 #define fprint_matrix(fp, mat)                                                 \
     _Generic((mat),                                                            \
-        matrix(char): __print_char,                                            \
-        matrix(int): __print_int,                                              \
-        matrix(unsigned int): __print_uint,                                    \
-        matrix(long): __print_long,                                            \
-        matrix(unsigned long): __print_ulong,                                 \
-        matrix(float): __print_float,                                          \
-        matrix(double): __print_double,                                        \
-        matrix(long double): __print_long_double)(fp, mat)
+        matrix(char): __print_char_m,                                          \
+        matrix(int): __print_int_m,                                            \
+        matrix(short): __print_sho_mrt,                                        \
+        matrix(unsigned int): __print_uint_m,                                  \
+        matrix(long): __print_long_m,                                          \
+        matrix(unsigned long): __print_ulong_m,                                \
+        matrix(float): __print_float_m,                                        \
+        matrix(double): __print_double_m,                                      \
+        matrix(long double): __print_long_double_m)(fp, mat)
 
 /**
  * @brief Function to print a matrix to a file pointer
@@ -194,8 +160,8 @@ void __print_ulong(FILE* fp, matrix(unsigned long) mat);
  */
 #define ELEM_SET_EQUAL(_targ, _from)                                           \
     do {                                                                       \
-        matrix targ = (_targ);                                                 \
-        matrix from = (_from);                                                 \
+        __typeof__(_targ) targ = (_targ);                                      \
+        __typeof__(_from) from = (_from);                                      \
         if (NOT_SAME_SHAPE(targ, from)) {                                      \
             raise_error(                                                       \
                 SIMUTIL_DIMENSION_ERROR,                                       \
@@ -219,7 +185,7 @@ void __print_ulong(FILE* fp, matrix(unsigned long) mat);
  */
 #define ELEM_SET_CONST(_targ, _constant)                                       \
     do {                                                                       \
-        matrix targ = (_targ);                                                 \
+        __typeof__(_targ) targ = (_targ);                                      \
         double constant = (_constant);                                         \
         const int nrows = (const int)ROWS(targ);                               \
         const int ncols = (const int)COLS(targ);                               \
@@ -240,8 +206,8 @@ void __print_ulong(FILE* fp, matrix(unsigned long) mat);
  */
 #define ELEM_OPER(_targ, _from, _oper)                                         \
     do {                                                                       \
-        matrix targ = (_targ);                                                 \
-        matrix from = (_from);                                                 \
+        __typeof__(_targ) targ = (_targ);                                      \
+        __typeof__(_from) from = (_from);                                      \
         if (NOT_SAME_SHAPE(targ, from)) {                                      \
             raise_error(SIMUTIL_DIMENSION_ERROR,                               \
                         "Unmatching matrix dimensions @ matrix ELEM_OPER!\n"); \
@@ -266,9 +232,9 @@ void __print_ulong(FILE* fp, matrix(unsigned long) mat);
  */
 #define ELEM_OPER_TARG(_targ, _lhs, _rhs, _oper)                               \
     do {                                                                       \
-        matrix targ = (_targ);                                                 \
-        matrix lhs = (_lhs);                                                   \
-        matrix rhs = (_rhs);                                                   \
+        __typeof__(_targ) targ = (_targ);                                      \
+        __typeof__(_lhs) lhs = (_lhs);                                         \
+        __typeof__(_rhs) rhs = (_rhs);                                         \
         if (NOT_SAME_SHAPE(targ, lhs) || NOT_SAME_SHAPE(targ, rhs) ||          \
             NOT_SAME_SHAPE(lhs, rhs)) {                                        \
             raise_error(                                                       \
@@ -303,8 +269,8 @@ void __print_ulong(FILE* fp, matrix(unsigned long) mat);
  */
 #define ELEM_OPER_SLICE(_targ, _from, _oper, _l, _r, _u, _d)                   \
     do {                                                                       \
-        matrix targ = (_targ);                                                 \
-        matrix from = (_from);                                                 \
+        __typeof__(_targ) targ = (_targ);                                      \
+        __typeof__(_from) from = (_from);                                      \
         int l = (_l);                                                          \
         int r = (_r);                                                          \
         int u = (_u);                                                          \
@@ -341,9 +307,9 @@ void __print_ulong(FILE* fp, matrix(unsigned long) mat);
  */
 #define ELEM_OPER_SLICE_LIKE(_targ, _from, _oper, _like)                       \
     do {                                                                       \
-        matrix targ = (_targ);                                                 \
-        matrix from = (_from);                                                 \
-        matrix like = (_like);                                                 \
+        __typeof__(_targ) targ = (_targ);                                      \
+        __typeof__(_from) from = (_from);                                      \
+        __typeof__(_like) like = (_like);                                      \
         if (ROWS(like) > ROWS(targ) || COLS(like) > COLS(targ)) {              \
             raise_error(SIMUTIL_DIMENSION_ERROR,                               \
                         "Unmatching matrix dimensions @ matrix "               \
@@ -374,7 +340,7 @@ void __print_ulong(FILE* fp, matrix(unsigned long) mat);
  */
 #define CONST_OPER(_targ, _constant, _oper)                                    \
     do {                                                                       \
-        matrix targ = (_targ);                                                 \
+        __typeof__(_targ) targ = (_targ);                                      \
         const int ncols = (const int)COLS(targ);                               \
         const int nrows = (const int)ROWS(targ);                               \
         const double constant = (double)(_constant);                           \
@@ -404,7 +370,7 @@ void __print_ulong(FILE* fp, matrix(unsigned long) mat);
  */
 #define CONST_OPER_SLICE(_targ, _constant, _oper, _l, _r, _u, _d)              \
     do {                                                                       \
-        matrix targ = (_targ);                                                 \
+        __typeof__(_targ) targ = (_targ);                                      \
         const double constant = (double)(_constant);                           \
         int l = (_l);                                                          \
         int r = (_r);                                                          \
@@ -439,8 +405,8 @@ void __print_ulong(FILE* fp, matrix(unsigned long) mat);
  */
 #define CONST_OPER_SLICE_LIKE(_targ, _constant, _oper, _like)                  \
     do {                                                                       \
-        matrix targ = (_targ);                                                 \
-        matrix like = (_like);                                                 \
+        __typeof__(_targ) targ = (_targ);                                      \
+        __typeof__(_like) like = (_like);                                      \
         const double constant = (double)(_constant);                           \
         if (ROWS(like) > ROWS(targ) || COLS(like) > COLS(targ)) {              \
             raise_error(SIMUTIL_DIMENSION_ERROR,                               \

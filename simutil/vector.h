@@ -53,34 +53,42 @@ void __append_element(void** vec_mem, void* elem, size_t elem_size);
         vec_mem = NULL;                                                        \
     } while (0)
 
-void __print_dvector(FILE* fp, void* vec_mem, size_t elem_size);
-void __print_ivector(FILE* fp, void* vec_mem, size_t elem_size);
+// printing floating-point numbers
+void __print_float_v(FILE* fp, vector(float) vec);
+void __print_double_v(FILE* fp, vector(double) vec);
+void __print_long_double_v(FILE* fp, vector(long double) vec);
+
+// printing integers / chars
+void __print_char_v(FILE* fp, vector(char) vec);
+void __print_short_v(FILE* fp, vector(short) vec);
+void __print_int_v(FILE* fp, vector(int) vec);
+void __print_uint_v(FILE* fp, vector(unsigned int) vec);
+void __print_long_v(FILE* fp, vector(long) vec);
+void __print_ulong_v(FILE* fp, vector(unsigned long) vec);
 
 #define print_vector(vec)                                                      \
     _Generic((vec),                                                            \
-        vector(char): __print_ivector,                                         \
-        vector(short): __print_ivector,                                        \
-        vector(int): __print_ivector,                                          \
-        vector(unsigned int): __print_ivector,                                 \
-        vector(long): __print_ivector,                                         \
-        vector(unsigned long): __print_ivector,                                \
-        vector(float): __print_dvector,                                        \
-        vector(double): __print_dvector,                                       \
-        vector(long double): __print_dvector)(stdout, (void*)vec,              \
-                                              sizeof(*(vec)))
+        vector(char): __print_char_v,                                          \
+        vector(short): __print_short_v,                                        \
+        vector(int): __print_int_v,                                            \
+        vector(unsigned int): __print_uint_v,                                  \
+        vector(long): __print_long_v,                                          \
+        vector(unsigned long): __print_ulong_v,                                \
+        vector(float): __print_float_v,                                        \
+        vector(double): __print_double_v,                                      \
+        vector(long double): __print_long_double_v)(stdout, vec)
 
 #define fprint_vector(fp, vec)                                                 \
     _Generic((vec),                                                            \
-        vector(char): __print_ivector,                                         \
-        vector(short): __print_ivector,                                        \
-        vector(int): __print_ivector,                                          \
-        vector(unsigned int): __print_ivector,                                 \
-        vector(long): __print_ivector,                                         \
-        vector(unsigned long): __print_ivector,                                \
-        vector(float): __print_dvector,                                        \
-        vector(double): __print_dvector,                                       \
-        vector(long double): __print_dvector)((fp), (void*)vec,                \
-                                              sizeof(*(vec)))
+        vector(char): __print_char_v,                                          \
+        vector(short): __print_short_v,                                        \
+        vector(int): __print_int_v,                                            \
+        vector(unsigned int): __print_uint_v,                                  \
+        vector(long): __print_long_v,                                          \
+        vector(unsigned long): __print_ulong_v,                                \
+        vector(float): __print_float_v,                                        \
+        vector(double): __print_double_v,                                      \
+        vector(long double): __print_long_double_v)(fp, vec)
 
 /**
  * @brief Function to save a vector

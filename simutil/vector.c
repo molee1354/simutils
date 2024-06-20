@@ -63,71 +63,33 @@ void __append_element(void** vec_mem, void* elem, size_t elem_size) {
     *(vec_mem) = (void*)(out + VECTOR_SIZE_BYTE);
 }
 
-#define CAST(type) type value = *((type*)element)
-
 #define PRINT_FUNC(name, type, fmt)                                            \
-    static void print_##name(FILE* fp, void* element) {                        \
-        CAST(type);                                                            \
-        fprintf(fp, fmt, value);                                               \
+    void print_##name##_v(FILE* fp, type vec) {                                \
+        const int length = LENGTH(vec);                                        \
+        if (fp == stdout || fp == stderr)                                      \
+            fprintf(fp, "[");                                                  \
+        for (int i = 1; i <= length; i++) {                                    \
+            if (i != length) {                                                 \
+                fprintf(fp, fmt, vec[i]);                                      \
+                fprintf(fp, ", ");                                             \
+            } else                                                             \
+                fprintf(fp, fmt, vec[i]);                                      \
+        }                                                                      \
+        if (fp == stdout || fp == stderr)                                      \
+            fprintf(fp, "]\n");                                                \
+        else                                                                   \
+            fprintf(fp, "\n");                                                 \
     }
 
-PRINT_FUNC(f32, float, "%.3f")
-PRINT_FUNC(f64, double, "%.3f")
-PRINT_FUNC(f128, long double, "%.3Lf")
+// printing floating-point numbers
+PRINT_FUNC(_float, vector(float), "%6.3f")
+PRINT_FUNC(_double, vector(double), "%6.3f")
+PRINT_FUNC(_long_double, vector(long double), "%6.3Lf")
 
-void __print_dvector(FILE* fp, void* vec_mem, size_t elem_size) {
-    const int size = (int)LENGTH(vec_mem);
-    void (*print_function)(FILE*, void*) = NULL;
-    if (elem_size == 4) {
-        print_function = print_f32;
-    } else if (elem_size == 8) {
-        print_function = print_f64;
-    } else if (elem_size == 16) {
-        print_function = print_f128;
-    } else {
-        raise_error(SIMUTIL_TYPE_ERROR, "Unsupported element type...");
-        return;
-    }
-    if (fp == stdout || fp == stderr)
-        fprintf(fp, "[");
-    for (int i = 1; i <= size; i++) {
-        print_function(fp, (char*)vec_mem + i * elem_size);
-        if (i != size)
-            fprintf(fp, ", ");
-    }
-    if (fp == stdout || fp == stderr)
-        fprintf(fp, "]\n");
-    else
-        fprintf(fp, "\n");
-}
-
-PRINT_FUNC(i8, char, "%c")
-PRINT_FUNC(i16, short, "%hi")
-PRINT_FUNC(i32, int, "%d")
-PRINT_FUNC(i64, long, "%ld")
-
-void __print_ivector(FILE* fp, void* vec_mem, size_t elem_size) {
-    const int size = (int)LENGTH(vec_mem);
-    void (*print_function)(FILE*, void*) = NULL;
-    if (elem_size == 1) {
-        print_function = print_i8;
-    } else if (elem_size == 2) {
-        print_function = print_i16;
-    } else if (elem_size == 4) {
-        print_function = print_i32;
-    } else if (elem_size == 8) {
-        print_function = print_i64;
-    } else {
-        raise_error(SIMUTIL_TYPE_ERROR, "Unsupported element type...");
-        return;
-    }
-    if (fp == stdout || fp == stderr)
-        fprintf(fp, "[");
-    for (int i = 1; i <= size; i++) {
-        print_function(fp, (char*)vec_mem + i * elem_size);
-        if (i != size)
-            fprintf(fp, ", ");
-    }
-    if (fp == stdout || fp == stderr)
-        fprintf(fp, "]\n");
-}
+// printing integers / char
+PRINT_FUNC(_char, vector(char), "%c")
+PRINT_FUNC(_short, vector(short), "%3hd")
+PRINT_FUNC(_int, vector(int), "%3d")
+PRINT_FUNC(_uint, vector(unsigned int), "%3u")
+PRINT_FUNC(_long, vector(long), "%3ld")
+PRINT_FUNC(_ulong, vector(unsigned long), "%3lu")
