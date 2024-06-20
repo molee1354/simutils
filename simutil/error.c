@@ -1,5 +1,6 @@
 #include "error.h"
 #include <stdarg.h>
+#include <stdio.h>
 
 static void error_type(error_t err) {
     switch (err) {

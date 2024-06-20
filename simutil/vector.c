@@ -3,16 +3,19 @@
 #include <string.h>
 
 #define CHECK(p)                                                               \
-    if (!p) {                                                                  \
-        raise_error(SIMUTIL_ALLOCATE_ERROR, "NULL allocation for vector!\n");  \
-        exit(EXIT_FAILURE);                                                    \
-    }
+    do {                                                                       \
+        if (!p) {                                                              \
+            raise_error(SIMUTIL_ALLOCATE_ERROR,                                \
+                        "NULL allocation for vector!\n");                      \
+        }                                                                      \
+    } while (0)
 
 void* __init_vector(size_t size, size_t n_elem) {
     void* vec_start = calloc(1, size);
     CHECK(vec_start);
     *(((size_t*)vec_start) + 0) = n_elem;
     char* out = (char*)vec_start + VECTOR_SIZE_BYTE;
+    CHECK(out);
     return (void*)out;
 }
 
@@ -64,7 +67,7 @@ void __append_element(void** vec_mem, void* elem, size_t elem_size) {
 }
 
 #define PRINT_FUNC(name, type, fmt)                                            \
-    void __print##name##_v(FILE* fp, type vec) {                                \
+    void __print##name##_v(FILE* fp, type vec) {                               \
         const int length = LENGTH(vec);                                        \
         if (fp == stdout || fp == stderr)                                      \
             fprintf(fp, "[");                                                  \

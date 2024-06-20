@@ -40,9 +40,9 @@ tensor new_tensor(unsigned int ncols, unsigned int nrows, unsigned int ndeps) {
 void save_tensor(tensor ten, const char* filename) {
     FILE* file = fopen(filename, "wb");
     CHECK(file);
-    const int ncols = (const int)DIM1(ten);
-    const int nrows = (const int)DIM2(ten);
-    const int ndeps = (const int)DIM3(ten);
+    const int ncols = (const int)DIM1_t(ten);
+    const int nrows = (const int)DIM2_t(ten);
+    const int ndeps = (const int)DIM3_t(ten);
 
     fwrite(&nrows, sizeof(nrows), 1, file);
     fwrite(&ncols, sizeof(ncols), 1, file);
@@ -96,9 +96,9 @@ tensor read_tensor(const char* filename) {
 }
 
 void print_tensor(tensor ten) {
-    const int ncol = (const int)DIM1(ten); // nx
-    const int nrow = (const int)DIM2(ten); // ny
-    const int ndep = (const int)DIM3(ten); // nz
+    const int ncol = (const int)DIM1_t(ten); // nx
+    const int nrow = (const int)DIM2_t(ten); // ny
+    const int ndep = (const int)DIM3_t(ten); // nz
     printf("[\n ");
     int i, j, k;
     for (k = 1; k <= ndep; k++) {
@@ -117,9 +117,9 @@ void print_tensor(tensor ten) {
 }
 
 void fprint_tensor(FILE* fp, tensor ten) {
-    const int ncol = (const int)DIM1(ten); // nx
-    const int nrow = (const int)DIM2(ten); // ny
-    const int ndep = (const int)DIM3(ten); // nz
+    const int ncol = (const int)DIM1_t(ten); // nx
+    const int nrow = (const int)DIM2_t(ten); // ny
+    const int ndep = (const int)DIM3_t(ten); // nz
     int i, j, k;
     for (k = 1; k <= ndep; k++) {
         for (j = 1; j <= nrow; j++) {

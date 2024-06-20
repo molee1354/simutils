@@ -1,7 +1,6 @@
 #ifndef SIMUTIL_ERROR_H
 #define SIMUTIL_ERROR_H
 
-#include <stdio.h>
 #include <stdlib.h>
 
 typedef enum {
