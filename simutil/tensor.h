@@ -18,17 +18,17 @@ typedef double*** tensor;
 
 // (*( (unsigned int*)(((char*)(mat) - MATRIX_SIZE_BYTE + sizeof(unsigned int) *
 // 0))))
-#define DIM1_t(ten)                                                              \
+#define DIM1_t(ten)                                                            \
     ((int)(*((unsigned int*)(((char*)(ten) - TENSOR_SIZE_BYTE +                \
                               sizeof(unsigned int) * 0)))))
 
 // row
-#define DIM2_t(ten)                                                              \
+#define DIM2_t(ten)                                                            \
     ((int)(*((unsigned int*)(((char*)(ten) - TENSOR_SIZE_BYTE +                \
                               sizeof(unsigned int) * 1)))))
 
 // dep
-#define DIM3_t(ten)                                                              \
+#define DIM3_t(ten)                                                            \
     ((int)(*((unsigned int*)(((char*)(ten) - TENSOR_SIZE_BYTE +                \
                               sizeof(unsigned int) * 2)))))
 

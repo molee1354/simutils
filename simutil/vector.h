@@ -34,6 +34,8 @@
 
 void* __init_vector(size_t size, size_t n_elem);
 
+void __resize_vector(void** vec_mem, size_t new_length, size_t elem_size);
+
 #define new_vector(T, length)                                                  \
     ((vector(T))__init_vector(                                                 \
         sizeof(T) * ((size_t)(length) + 1) + VECTOR_SIZE_BYTE, (length)))
@@ -44,6 +46,11 @@ void __append_element(void** vec_mem, void* elem, size_t elem_size);
     do {                                                                       \
         __append_element((void**)(vec), &(__typeof__(**(vec))){elem},          \
                          sizeof(**(vec)));                                     \
+    } while (0)
+
+#define resize_vector(vec, resize)                                             \
+    do {                                                                       \
+        __resize_vector((void**)(vec), (resize), sizeof(**(vec)));             \
     } while (0)
 
 #define free_vector(vec)                                                       \

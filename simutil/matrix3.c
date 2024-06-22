@@ -29,7 +29,7 @@ void* __init_matrix3(size_t size, size_t elem_size, size_t ncols, size_t nrows,
     CHECK(row_pointers);
 
     // Pointer to the actual data start
-    char* data_start = (char*)(row_pointers + ((ncols+1) * (nrows+1)));
+    char* data_start = (char*)(row_pointers + ((ncols + 1) * (nrows + 1)));
     CHECK(data_start);
 
     // Initialize the array of pointers
@@ -37,7 +37,8 @@ void* __init_matrix3(size_t size, size_t elem_size, size_t ncols, size_t nrows,
         out[i] = row_pointers + i * nrows;
         for (size_t j = 1; j <= nrows; j++) {
             out[i][j] =
-                data_start + (i * (nrows+1) * (ndeps+1) + j * (ndeps+1)) * elem_size;
+                data_start +
+                (i * (nrows + 1) * (ndeps + 1) + j * (ndeps + 1)) * elem_size;
             CHECK(out[i][j]);
         }
     }

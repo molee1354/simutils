@@ -35,7 +35,7 @@ void* __init_matrix3(size_t size, size_t elem_size, size_t ncols, size_t nrows,
 
 #define free_matrix3(mat)                                                      \
     do {                                                                       \
-        void* mat_start = (void*)((char*)(mat) - MATRIX3_SIZE_BYTE);            \
+        void* mat_start = (void*)((char*)(mat) - MATRIX3_SIZE_BYTE);           \
         free(mat_start);                                                       \
         mat_start = NULL;                                                      \
     } while (0)

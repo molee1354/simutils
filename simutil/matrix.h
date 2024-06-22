@@ -93,7 +93,7 @@ void __print_ulong_m(FILE* fp, matrix(unsigned long) mat);
     _Generic((mat),                                                            \
         matrix(char): __print_char_m,                                          \
         matrix(int): __print_int_m,                                            \
-        matrix(short): __print_sho_mrt,                                        \
+        matrix(short): __print_short_m,                                        \
         matrix(unsigned int): __print_uint_m,                                  \
         matrix(long): __print_long_m,                                          \
         matrix(unsigned long): __print_ulong_m,                                \
