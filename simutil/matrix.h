@@ -9,7 +9,6 @@
 #define matrix(T) T**
 
 #define MATRIX_SIZE_BYTE (size_t)(sizeof(size_t) * 2)
-#define MATRIX_ROW_OFFSET (size_t)(sizeof(double*))
 
 /****************************************************************************/
 /*                                                                          */

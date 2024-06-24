@@ -20,17 +20,17 @@
  * 'targ' that is the same size as the static vector.
  *
  */
-/* #define FROM_VECTOR(from, _targ, _size) \
+#define FROM_VECTOR(from, _targ, _size) \
     do {                                                                       \
         int size = (int)(_size);                                               \
-        vector targ = (_targ);                                                 \
+        __typeof__(_targ) targ = (_targ);                                                 \
         if (LENGTH(targ) != size)                                              \
             raise_error(SIMUTIL_DIMENSION_ERROR,                               \
                         "Unmatching dimensions for vector creation!\n");       \
         for (int i = 0; i < (int)size; i++) {                                  \
             targ[i + 1] = (from)[i];                                           \
         }                                                                      \
-    } while (0) */
+    } while (0)
 
 void* __init_vector(size_t size, size_t n_elem);
 
@@ -96,26 +96,5 @@ void __print_ulong_v(FILE* fp, vector(unsigned long) vec);
         vector(float): __print_float_v,                                        \
         vector(double): __print_double_v,                                      \
         vector(long double): __print_long_double_v)(fp, vec)
-
-/**
- * @brief Function to save a vector
- *
- * @param vec
- */
-// void save_vector(vector vec, const char* filename);
-
-/**
- * @brief Function to read the saved vector from a file
- *
- * @param filename
- */
-// vector read_vector(const char* filename);
-
-/**
- * @brief Function to get the length of the vector
- *
- * @param vec
- */
-// unsigned int get_length(vector vec);
 
 #endif
