@@ -28,6 +28,21 @@
     ((int)(*(                                                                  \
         (size_t*)(((char*)(mat) - MATRIX_SIZE_BYTE + sizeof(size_t) * 1)))))
 
+#define FROM_MATRIX(_from, _targ, _ncols, _nrows)                              \
+    do {                                                                       \
+        int cols = (int)(_nrows);                                              \
+        int rows = (int)(_ncols);                                              \
+        __typeof__(_targ) targ = (_targ);                                      \
+        if (ROWS(targ) != _nrows || COLS(targ) != _ncols)                      \
+            raise_error(SIMUTIL_DIMENSION_ERROR,                               \
+                        "Unmatching dimensions for vector creation!\n");       \
+        for (int i = 0; i < (int)rows; i++) {                                  \
+            for (int j = 0; j < (int)cols; j++) {                              \
+                targ[i + 1][j + 1] = (_from)[j][i];                            \
+            }                                                                  \
+        }                                                                      \
+    } while (0)
+
 /**
  * @brief Function to initialize the memory needed for a new matrix.
  *
