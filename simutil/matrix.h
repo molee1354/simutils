@@ -100,13 +100,6 @@ void __print_ulong_m(FILE* fp, matrix(unsigned long) mat);
         matrix(double): __print_double_m,                                      \
         matrix(long double): __print_long_double_m)(fp, mat)
 
-/**
- * @brief Function to print a matrix to a file pointer
- *
- * @param mat Matrix to print
- */
-// void fprint_matrix(FILE* fp, matrix mat);
-
 /****************************************************************************/
 /*                                                                          */
 /*                            Macro Definitions                             */

@@ -8,6 +8,12 @@
 
 #define VECTOR_SIZE_BYTE (size_t)(sizeof(size_t) * 1)
 
+/****************************************************************************/
+/*                                                                          */
+/*                        Basic Functions and Macros                        */
+/*                                                                          */
+/****************************************************************************/
+
 /**
  * @brief Macro to access the size byte of the vector
  *
@@ -20,10 +26,10 @@
  * 'targ' that is the same size as the static vector.
  *
  */
-#define FROM_VECTOR(from, _targ, _size) \
+#define FROM_VECTOR(from, _targ, _size)                                        \
     do {                                                                       \
         int size = (int)(_size);                                               \
-        __typeof__(_targ) targ = (_targ);                                                 \
+        __typeof__(_targ) targ = (_targ);                                      \
         if (LENGTH(targ) != size)                                              \
             raise_error(SIMUTIL_DIMENSION_ERROR,                               \
                         "Unmatching dimensions for vector creation!\n");       \

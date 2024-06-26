@@ -8,7 +8,13 @@
 
 #define MATRIX3_SIZE_BYTE (size_t)(sizeof(size_t) * 3)
 
-// col
+/****************************************************************************/
+/*                                                                          */
+/*                        Basic Functions and Macros                        */
+/*                                                                          */
+/****************************************************************************/
+
+// column
 #define DIM1(ten)                                                              \
     ((int)(*(                                                                  \
         (size_t*)(((char*)(ten) - MATRIX3_SIZE_BYTE + sizeof(size_t) * 0)))))
@@ -18,7 +24,7 @@
     ((int)(*(                                                                  \
         (size_t*)(((char*)(ten) - MATRIX3_SIZE_BYTE + sizeof(size_t) * 1)))))
 
-// dep
+// depth
 #define DIM3(ten)                                                              \
     ((int)(*(                                                                  \
         (size_t*)(((char*)(ten) - MATRIX3_SIZE_BYTE + sizeof(size_t) * 2)))))
