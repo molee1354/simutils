@@ -4,21 +4,21 @@ Basic synopsis for `simutils` modules.
 
 ## `simutil/vector.h`
 
-### The `vector` Data Structure
+### The `vector(T)` Data Structure
 
-The `vector` is simply a type alias for a single `double` pointer (`double*`).
+The `vector(T)` is simply a macro for a single pointer of type `T`.
 
 ```C
-typedef double* vector;
+#define vector(T) T*
 ```
 
-The advantage of using a `vector` instead of a `double*` is that a `vector` carries along with it the size information (like how you could with a `struct`), while still preserving the ability to be directly indexed with square brackets. The `vector` is also *1-indexed*, which makes the expression of mathematical models and operations very intuitive.
+The advantage of using a `vector(T)` instead of a single pointer `T*` is that a `vector(T)` carries along with it the size information (like how you could with a `struct`), while still preserving the ability to be directly indexed with square brackets. The `vector(T)` is also *1-indexed*, which makes the expression of mathematical models and operations very intuitive.
 
 ### Usage
 
 #### Including the Header File
 
-To use the data structures and math operations provided by the `vector` module, simply include the `simutil/vector.h` header in the include directive of your program.
+To use the `vector` module, simply include the `simutil/vector.h` header in the include directive of your program.
 
 ```c
 #include "simutil/vector.h"
@@ -26,21 +26,25 @@ To use the data structures and math operations provided by the `vector` module, 
 
 #### The `vector` Constructor and Destructor
 
-Memory for the `vector` is allocated on the heap, so every `vector` "constructor" needs to be paired with a complementary destructor.
+Memory for the `vector` is allocated on the heap, so every `vector` constructor needs to be paired with a complementary destructor.
 
 ##### Constructor
 
+Vectors can be created using a macro call that defines its type and size.
+
 ```C
-// creating a new vector with 3 elements
-vector vec = new_vector(3);
+// creating a new vector with 3 'double' elements
+vector(double) vec = new_vector(double, 3);
 
 vec[1] = 1.0; // setting "first" element to 1.0
 vec[3] = 1.0; // setting "last" element to 1.0
 ```
 
-The `vector` constructor returns a new vector with specified size that is zero-initialized. The elements can be modified using square brackets.
+The `vector` constructor returns a new vector with specified size and type that is zero-initialized. The elements can be accessed and modified using square brackets.
 
 ##### Destructor
+
+Freeing the memory allocated for the vector is also a simple macro call. The internal details are all managed in the macro.
 
 ```C
 // freeing the memory allocated for a vector
@@ -49,23 +53,23 @@ free_vector(vec);
 
 Other `vector` functions are listed in the [vector modules](./modules/vector.md) document.
 
-## The `matrix` Data Structure
+## The `matrix(T)` Data Structure
 
-The `matrix` is simply a type alias for a double `double` pointer (`double**`).
+The `matrix(T)`, like the `vector(T)`, is simply a macro a double pointer of type `T`.
 
 ```C
-typedef double** matrix;
+#define matrix(T) T**
 ```
 
-Similar to `vector`, the advantage of using a `matrix` instead of a `double**` is that a `matrix` carries along with it the size information, while still preserving the ability to be directly indexed with double square brackets.
+Similar to `vector`, the advantage of using a `matrix(T)` instead of a `T**` is that the `matrix` carries along with it the size information, while still preserving the ability to be directly indexed with double square brackets.
 
-The `matrix` in `simutils` are *column-major* and *1-indexed*, similar to matrix implentations in programming languages like Matlab, Fortran, and Julia.
+The `matrix` in `simutils` is both *column-major* and *1-indexed*, similar to matrix implentations in programming languages like Matlab, Fortran, and Julia.
 
 ### Usage
 
 #### Including the Header File
 
-To use the data structures and math operations provided by the `matrix` module, simply include the `simutil/matrix.h` header in the include directive of your program.
+To use the `matrix` module, simply include the `simutil/matrix.h` header in the include directive of your program.
 
 ```c
 #include "simutil/matrix.h"
@@ -78,14 +82,14 @@ Memory for the `matrix` is allocated on the heap, so every `matrix` "constructor
 ##### Constructor
 
 ```C
-// creating a new vector with 3 columns and 4 rows
-matrix mat = new_matrix(3,4);
+// creating a new matrix with integer elements with 3 columns and 4 rows
+matrix(int) mat = new_matrix(int, 3, 4);
 
-mat[1][1] = 1.0; // setting "first" element to 1.0
-mat[3][4] = 1.0; // setting "last" element to 1.0
+mat[1][1] = 1; // setting "first" element to 1
+mat[3][4] = 1; // setting "last" element to 1
 ```
 
-The `matrix` constructor returns a new matrix with specified size that is zero-initialized. The elements can be modified using square brackets.
+The `matrix` constructor is a macro that returns a new matrix with specified type and size that is zero-initialized. The elements can be modified and accessed using square brackets.
 
 ##### Destructor
 
@@ -97,43 +101,43 @@ free_matrix(mat);
 Other `matrix` functions are listed in the [matrix modules](./modules/matrix.md) document.
 
 
-## The `tensor` Data Structure
+## The `matrix3` Data Structure
 
-The `tensor` is simply a type alias for a *triple* `double` pointer (`double***`). While the mathematical definition of a tensor is much more general, in `simutils` it's just a 3D matrix.
+The `matrix3(T)` is a macro for a triple pointer of type `T`, which provides an easy way to represent a 3-D matrix.
 
 ```C
-typedef double*** tensor;
+#define matrix3(T) T***
 ```
 
-Similar to `vector` and `matrix`, the `tensor` carries along with it the size information, while still preserving the ability to be directly indexed with double square brackets.
+Similar to `vector` and `matrix`, the `matrix3` carries along with it the size information, while still preserving the ability to be directly indexed with double square brackets.
 
-The `tensor` in `simutils` are *column-major* and *1-indexed*, similar to tensor implentations in programming languages like Matlab, Fortran, and Julia.
+The `matrix3` in `simutils` are *column-major* and *1-indexed*, similar to indexing schemes in programming languages like Matlab, Fortran, and Julia.
 
 ### Usage
 
 #### Including the Header File
 
-To use the data structures and math operations provided by the `tensor` module, simply include the `simutil/tensor.h` header in the include directive of your program.
+To use the data structures and math operations provided by the `matrix3` module, simply include the `simutil/matrix3.h` header in the include directive of your program.
 
 ```c
-#include "simutil/tensor.h"
+#include "simutil/matrix3.h"
 ```
 
-#### The `tensor` Constructor and Destructor
+#### The `matrix3` Constructor and Destructor
 
-Memory for the `tensor` is allocated on the heap, so every `tensor` "constructor" needs to be paired with a complementary destructor.
+Memory for the `matrix3` is allocated on the heap, so every `matrix3` constructor needs to be paired with a complementary destructor.
 
 ##### Constructor
 
 ```C
-// creating a new vector with 3 columns, 4 rows, 5 "pages"
-tensor mat = new_tensor(3,4,5);
+// creating a new 3-D matrix of type 'float' with 3 columns, 4 rows, 5 "pages"
+matrix3(float) mat = new_matrix3(float, 3,4,5);
 
 ten[1][1][1] = 1.0; // setting "first" element to 1.0
 ten[3][4][5] = 1.0; // setting "last" element to 1.0
 ```
 
-The `tensor` constructor returns a new tensor with specified size that is zero-initialized. The elements can be modified using square brackets.
+The `matrix3` constructor returns a new 3-D matrix with specified size that is zero-initialized. The elements can be modified and accessed using square brackets.
 
 ##### Destructor
 
@@ -142,4 +146,4 @@ The `tensor` constructor returns a new tensor with specified size that is zero-i
 free_tensor(mat);
 ```
 
-Other `tensor` functions are listed in the [tensor modules](./modules/tensor.md) document.
+Other `matrix3` functions are listed in the [3-D matrix modules](./modules/matrix3.md) document.
