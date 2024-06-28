@@ -46,4 +46,41 @@ void* __init_matrix3(size_t size, size_t elem_size, size_t ncols, size_t nrows,
         mat_start = NULL;                                                      \
     } while (0)
 
+// printing floating-point numbers
+void __print_float_m3(FILE* fp, matrix3(float) mat3);
+void __print_double_m3(FILE* fp, matrix3(double) mat3);
+void __print_long_double_m3(FILE* fp, matrix3(long double) mat3);
+
+// printing integers / chars
+void __print_char_m3(FILE* fp, matrix3(char) mat3);
+void __print_short_m3(FILE* fp, matrix3(short) mat3);
+void __print_int_m3(FILE* fp, matrix3(int) mat3);
+void __print_uint_m3(FILE* fp, matrix3(unsigned int) mat3);
+void __print_long_m3(FILE* fp, matrix3(long) mat3);
+void __print_ulong_m3(FILE* fp, matrix3(unsigned long) mat3);
+
+#define print_matrix3(mat3)                                                    \
+    _Generic((mat3),                                                           \
+        matrix3(char): __print_char_m3,                                        \
+        matrix3(short): __print_short_m3,                                      \
+        matrix3(int): __print_int_m3,                                          \
+        matrix3(unsigned int): __print_uint_m3,                                \
+        matrix3(long): __print_long_m3,                                        \
+        matrix3(unsigned long): __print_ulong_m3,                              \
+        matrix3(float): __print_float_m3,                                      \
+        matrix3(double): __print_double_m3,                                    \
+        matrix3(long double): __print_long_double_m3)(stdout, mat3)
+
+#define fprint_matrix3(fp, mat3)                                               \
+    _Generic((mat3),                                                           \
+        matrix3(char): __print_char_m3,                                        \
+        matrix3(int): __print_int_m3,                                          \
+        matrix3(short): __print_short_m3,                                      \
+        matrix3(unsigned int): __print_uint_m3,                                \
+        matrix3(long): __print_long_m3,                                        \
+        matrix3(unsigned long): __print_ulong_m3,                              \
+        matrix3(float): __print_float_m3,                                      \
+        matrix3(double): __print_double_m3,                                    \
+        matrix3(long double): __print_long_double_m3)(fp, mat3)
+
 #endif
