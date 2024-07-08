@@ -73,7 +73,9 @@ void __print_long_double_v(FILE* fp, vector(long double) vec);
 
 // printing integers / chars
 void __print_char_v(FILE* fp, vector(char) vec);
+void __print_uchar_v(FILE* fp, vector(unsigned char) vec);
 void __print_short_v(FILE* fp, vector(short) vec);
+void __print_ushort_v(FILE* fp, vector(unsigned short) vec);
 void __print_int_v(FILE* fp, vector(int) vec);
 void __print_uint_v(FILE* fp, vector(unsigned int) vec);
 void __print_long_v(FILE* fp, vector(long) vec);
@@ -82,7 +84,9 @@ void __print_ulong_v(FILE* fp, vector(unsigned long) vec);
 #define print_vector(vec)                                                      \
     _Generic((vec),                                                            \
         vector(char): __print_char_v,                                          \
+        vector(unsigned char): __print_uchar_v,                                          \
         vector(short): __print_short_v,                                        \
+        vector(unsigned short): __print_ushort_v,                                        \
         vector(int): __print_int_v,                                            \
         vector(unsigned int): __print_uint_v,                                  \
         vector(long): __print_long_v,                                          \
@@ -94,7 +98,9 @@ void __print_ulong_v(FILE* fp, vector(unsigned long) vec);
 #define fprint_vector(fp, vec)                                                 \
     _Generic((vec),                                                            \
         vector(char): __print_char_v,                                          \
+        vector(unsigned char): __print_uchar_v,                                          \
         vector(short): __print_short_v,                                        \
+        vector(unsigned short): __print_ushort_v,                                        \
         vector(int): __print_int_v,                                            \
         vector(unsigned int): __print_uint_v,                                  \
         vector(long): __print_long_v,                                          \

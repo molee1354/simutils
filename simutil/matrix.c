@@ -54,7 +54,9 @@ PRINT_FUNC(_long_double, matrix(long double), "%6.3Lf")
 
 // printing integers / char
 PRINT_FUNC(_char, matrix(char), "%c")
+PRINT_FUNC(_uchar, matrix(unsigned char), "%3d")
 PRINT_FUNC(_short, matrix(short), "%3hd")
+PRINT_FUNC(_ushort, matrix(unsigned short), "%3hd")
 PRINT_FUNC(_int, matrix(int), "%3d")
 PRINT_FUNC(_uint, matrix(unsigned int), "%3u")
 PRINT_FUNC(_long, matrix(long), "%3ld")

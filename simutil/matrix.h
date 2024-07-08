@@ -85,7 +85,9 @@ void __print_long_double_m(FILE* fp, matrix(long double) mat);
 
 // printing integers / chars
 void __print_char_m(FILE* fp, matrix(char) mat);
+void __print_uchar_m(FILE* fp, matrix(unsigned char) mat);
 void __print_short_m(FILE* fp, matrix(short) mat);
+void __print_ushort_m(FILE* fp, matrix(unsigned short) mat);
 void __print_int_m(FILE* fp, matrix(int) mat);
 void __print_uint_m(FILE* fp, matrix(unsigned int) mat);
 void __print_long_m(FILE* fp, matrix(long) mat);
@@ -94,7 +96,9 @@ void __print_ulong_m(FILE* fp, matrix(unsigned long) mat);
 #define print_matrix(mat)                                                      \
     _Generic((mat),                                                            \
         matrix(char): __print_char_m,                                          \
+        matrix(unsigned char): __print_uchar_m,                                \
         matrix(short): __print_short_m,                                        \
+        matrix(unsigned short): __print_ushort_m,                              \
         matrix(int): __print_int_m,                                            \
         matrix(unsigned int): __print_uint_m,                                  \
         matrix(long): __print_long_m,                                          \
@@ -106,8 +110,10 @@ void __print_ulong_m(FILE* fp, matrix(unsigned long) mat);
 #define fprint_matrix(fp, mat)                                                 \
     _Generic((mat),                                                            \
         matrix(char): __print_char_m,                                          \
-        matrix(int): __print_int_m,                                            \
+        matrix(unsigned char): __print_uchar_m,                                \
         matrix(short): __print_short_m,                                        \
+        matrix(unsigned short): __print_ushort_m,                              \
+        matrix(int): __print_int_m,                                            \
         matrix(unsigned int): __print_uint_m,                                  \
         matrix(long): __print_long_m,                                          \
         matrix(unsigned long): __print_ulong_m,                                \

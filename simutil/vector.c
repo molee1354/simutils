@@ -109,7 +109,9 @@ PRINT_FUNC(_long_double, vector(long double), "%6.3Lf")
 
 // printing integers / char
 PRINT_FUNC(_char, vector(char), "%c")
+PRINT_FUNC(_uchar, vector(unsigned char), "%3d")
 PRINT_FUNC(_short, vector(short), "%3hd")
+PRINT_FUNC(_ushort, vector(unsigned short), "%3hd")
 PRINT_FUNC(_int, vector(int), "%3d")
 PRINT_FUNC(_uint, vector(unsigned int), "%3u")
 PRINT_FUNC(_long, vector(long), "%3ld")
