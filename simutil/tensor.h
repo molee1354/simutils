@@ -4,11 +4,11 @@
 #include "error.h"
 #include "simutil_includes.h"
 
-typedef double ***tensor;
+typedef double*** tensor;
 
 #define TENSOR_SIZE_BYTE (size_t)(sizeof(unsigned int) * 3)
-#define TENSOR_ROW_OFFSET (size_t)(sizeof(double *))
-#define TENSOR_DEPTH_OFFSET (size_t)(sizeof(double **))
+#define TENSOR_ROW_OFFSET (size_t)(sizeof(double*))
+#define TENSOR_DEPTH_OFFSET (size_t)(sizeof(double**))
 
 /**
  * @brief Macro to access the size byte of the tensor
@@ -18,19 +18,19 @@ typedef double ***tensor;
 
 // (*( (unsigned int*)(((char*)(mat) - MATRIX_SIZE_BYTE + sizeof(unsigned int) *
 // 0))))
-#define DIM1(ten)                                                              \
-    ((int)(*((unsigned int *)(((char *)(ten) - TENSOR_SIZE_BYTE +              \
-                               sizeof(unsigned int) * 0)))))
+#define DIM1_t(ten)                                                            \
+    ((int)(*((unsigned int*)(((char*)(ten) - TENSOR_SIZE_BYTE +                \
+                              sizeof(unsigned int) * 0)))))
 
 // row
-#define DIM2(ten)                                                              \
-    ((int)(*((unsigned int *)(((char *)(ten) - TENSOR_SIZE_BYTE +              \
-                               sizeof(unsigned int) * 1)))))
+#define DIM2_t(ten)                                                            \
+    ((int)(*((unsigned int*)(((char*)(ten) - TENSOR_SIZE_BYTE +                \
+                              sizeof(unsigned int) * 1)))))
 
 // dep
-#define DIM3(ten)                                                              \
-    ((int)(*((unsigned int *)(((char *)(ten) - TENSOR_SIZE_BYTE +              \
-                               sizeof(unsigned int) * 2)))))
+#define DIM3_t(ten)                                                            \
+    ((int)(*((unsigned int*)(((char*)(ten) - TENSOR_SIZE_BYTE +                \
+                              sizeof(unsigned int) * 2)))))
 
 /**
  * @brief Function to create a new tensor with a given size
@@ -53,7 +53,7 @@ void free_tensor(tensor ten);
  * @param ten
  * @param filename
  */
-void save_tensor(tensor ten, const char *filename);
+void save_tensor(tensor ten, const char* filename);
 
 /**
  * @brief Function to read a saved tensor from a given filename
@@ -61,7 +61,7 @@ void save_tensor(tensor ten, const char *filename);
  * @param filename
  * @return
  */
-tensor read_tensor(const char *filename);
+tensor read_tensor(const char* filename);
 
 /**
  * @brief Function to print a tensor
@@ -76,6 +76,6 @@ void print_tensor(tensor ten);
  * @param fp File pointer
  * @param ten Tensor to print
  */
-void fprint_tensor(FILE *fp, tensor ten);
+void fprint_tensor(FILE* fp, tensor ten);
 
 #endif

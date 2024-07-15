@@ -1,6 +1,6 @@
 # `simutils`
 
-C header files and definitions for common data structures and math modules.
+C library that includes data structures and functions optimized for scientific programming and mathematics.
 
 ## Why `simutils`?
 
@@ -8,24 +8,28 @@ C header files and definitions for common data structures and math modules.
 
 ### Implicit Size Information
 
-Whenever one starts using abstract data structures in C like arrays and strings, they immediately run into issues with size. The length of an array or string somehow has to be relayed along with data type itself, which many times adds a lot of unnecessary overhead to the program.
+Whenever one starts using more abstract data structures in C like arrays and strings, they immediately run into issues with knowing size. We want the length of an array or string somehow has to be relayed along with data type itself, which many times adds a lot of unnecessary overhead to the program.
 
-All the data structures provided in `simutils` come with macros that access size information. No more messing around with structs, global variables, or extra function parameters.
+All the data structures provided in `simutils` have macros that access size information. No more messing around with structs, global variables, or extra function parameters.
 
 ```C
 // Getting the length of a vector is just a macro call!
 int vector_size = LENGTH(some_vector);
+
+// Getting the rows/columns of a matrix are also just macro calls.
+int num_rows = ROWS(some_matrix);
+int num_cols = COLS(some_matrix);
 ```
 
 ### 1-Indexed Data Structures
 
-While to some, array-like data structures being 1-indexed might appear to be a bit out-of-style, such a scheme allows for the seamless expression of mathematical models within a programming language. The `vector`, `matrix`, and `tensor` data structures proveided in `simutils` are all 1-indexed to fit this purpose.
+While to some, array-like data structures being 1-indexed might appear to be a bit out-of-style, such a scheme allows for the seamless expression of mathematical models within programming. The `vector`, and `matrix` data structures proveided in `simutils` are all 1-indexed to fit this purpose.
 
 ### Column-major Matrices
 
 Converting between row-major and column-major matrices might be simple conceptually, but one quickly learns that implementing that "simple" change turns out to be a bit more involved than just switching `i` and `j`.
 
-The `matrix` and `tensor` data structures in `simutils` are column-majored. Memory magic is done in the constructors for both the `matrix` and `tensor` so that the data structures can be both represented and indexed in column-major style.
+The `matrix` and `matrix3` data structures in `simutils` are column-majored. Memory magic is done in the constructors for both the `matrix` and `tensor` so that the data structures can be both represented and indexed in column-major style.
 
 ```C
 // Incrementing j will traverse the *column* for both the data structures.

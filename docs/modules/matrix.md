@@ -1,58 +1,46 @@
-# `matrix` Functions
+# `matrix(T)` Functions
 
 Documentation for functions provided in the `matrix` module
 
-## Functions
+## Macros
 
-### `matrix new_matrix(unsigned int nrows, unsigned int ncols)`
+While the matrix "functions" listed here are really macros, they will be listed as functions to help with understading.
 
-Creates a new matrix of specified size and returns a pointer to it.
+### `matrix(T) new_matrix(T, unsigned int ncols, unsigned int nrows)`
 
-- `nrows`: The number of rows in the matrix.
+Creates a new matrix of specified type and size and returns a pointer of type `T` (`T**`).
+
+- `T`: The type of elements what the matrix will hold
 - `ncols`: The number of columns in the matrix.
+- `nrows`: The number of rows in the matrix.
 
-### `void save_matrix(matrix mat, const char *filename)`
-
-Saves a matrix to a binary file.
-
-- `mat`: The matrix to be saved.
-- `filename`: The name of the file to save the matrix to.
-
-### `matrix read_matrix(const char *filename)`
-
-Reads a matrix from a binary file and returns it.
-
-- `filename`: The name of the file containing the matrix.
-
-### `void print_matrix(matrix mat)`
+### `void print_matrix(matrix(T) mat)`
 
 Prints the elements of a matrix.
 
 - `mat`: The matrix to be printed.
 
-### `void free_matrix(matrix mat)`
+### `void free_matrix(matrix(T) mat)`
 
 Frees the memory allocated for a matrix.
 
 - `mat`: The matrix to be freed.
 
-## Macros
-
-### `COLS(mat)`
+### `int COLS(matrix(T) mat)`
 
 Returns the number of columns in a matrix.
 
 - `mat`: The matrix whose number of columns is to be determined.
 
-### `ROWS(mat)`
+### `int ROWS(matrix(T) mat)`
 
 Returns the number of rows in a matrix.
 
 - `mat`: The matrix whose number of rows is to be determined.
 
-### `FROM_MATRIX(from, targ, col, row)`
+### `matrix(T) FROM_MATRIX(T* from, matrix(T) targ, unsigned int col, unsigned int row)`
 
-Creates a matrix from a given static 2D array (`double[][]`)
+Creates a matrix from a given static 2D array (`T[][]`)
 
 - `from`: The static matrix from which the elements will be copied from.
 - `targ`: The matrix to which the elements will be copied to.

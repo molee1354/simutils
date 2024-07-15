@@ -1,13 +1,14 @@
 #ifndef SIMUTIL_MATRIX_H
 #define SIMUTIL_MATRIX_H
 
+#include <omp.h>
+
 #include "error.h"
 #include "simutil_includes.h"
 
-typedef double **matrix;
+#define matrix(T) T**
 
-#define MATRIX_SIZE_BYTE (size_t)(sizeof(unsigned int) * 2)
-#define MATRIX_ROW_OFFSET (size_t)(sizeof(double *))
+#define MATRIX_SIZE_BYTE (size_t)(sizeof(size_t) * 2)
 
 /****************************************************************************/
 /*                                                                          */
@@ -19,82 +20,106 @@ typedef double **matrix;
  * @brief Macro to access the size byte of the matrix
  *
  */
-//  (*( (unsigned int*)(((char*)(vec) - VECTOR_SIZE_BYTE))+0 ))
 #define COLS(mat)                                                              \
-    ((int)(*((unsigned int *)(((char *)(mat) - MATRIX_SIZE_BYTE +              \
-                               sizeof(unsigned int) * 0)))))
+    ((int)(*(                                                                  \
+        (size_t*)(((char*)(mat) - MATRIX_SIZE_BYTE + sizeof(size_t) * 0)))))
 
 #define ROWS(mat)                                                              \
-    ((int)(*((unsigned int *)(((char *)(mat) - MATRIX_SIZE_BYTE +              \
-                               sizeof(unsigned int) * 1)))))
+    ((int)(*(                                                                  \
+        (size_t*)(((char*)(mat) - MATRIX_SIZE_BYTE + sizeof(size_t) * 1)))))
 
-/**
- * @brief Macro to create a new matrix based on an existing stack-allocated
- * matrix. Assumes that there is already an existing pointer to the matrix
- * 'targ' that is the same size as the static matrix.
- *
- */
-#define FROM_MATRIX(from, _targ, _col, _row)                                   \
+#define FROM_MATRIX(_from, _targ, _ncols, _nrows)                              \
     do {                                                                       \
-        const int row = (const int)(_row);                                     \
-        const int col = (const int)(_col);                                     \
-        matrix targ = (_targ);                                                 \
-        if (ROWS(targ) != row || COLS(targ) != col)                            \
-            raise_error(                                                       \
-                SIMUTIL_DIMENSION_ERROR,                                       \
-                "Unmatching matrix dimensions for matrix creation!\n");        \
-        for (int i = 0; i < row; i++) {                                        \
-            for (int j = 0; j < col; j++) {                                    \
-                targ[j + 1][i + 1] = (from)[i][j];                             \
+        int cols = (int)(_nrows);                                              \
+        int rows = (int)(_ncols);                                              \
+        __typeof__(_targ) targ = (_targ);                                      \
+        if (ROWS(targ) != _nrows || COLS(targ) != _ncols)                      \
+            raise_error(SIMUTIL_DIMENSION_ERROR,                               \
+                        "Unmatching dimensions for vector creation!\n");       \
+        for (int i = 0; i < (int)rows; i++) {                                  \
+            for (int j = 0; j < (int)cols; j++) {                              \
+                targ[i + 1][j + 1] = (_from)[j][i];                            \
             }                                                                  \
         }                                                                      \
     } while (0)
 
 /**
- * @brief Function to create a new matrix with a given size
+ * @brief Function to initialize the memory needed for a new matrix.
  *
- * @param size The size of the new matrix
- * @return matrix Double pointer to a new matrix
+ * @param size The size of the total memory block used by the matrix
+ * @param elem_size The size of a single element in the matrix
+ * @param ncols The number of columns in the matrix
+ * @param nrows The number of rows in the matrix
  */
-matrix new_matrix(unsigned int ncols, unsigned int nrows);
-// matrix new_matrix(unsigned int ncols, unsigned int nrows);
+void* __init_matrix(size_t size, size_t elem_size, size_t ncols, size_t nrows);
 
 /**
- * @brief Function to properly free the memory allocated to the matrix
+ * @brief Macro to create a new matrix of type T
  *
- * @param mat Vector to free
+ * @param T Type of matrix element
+ * @param ncols Number of columns
+ * @param nrows Number of rows
  */
-void free_matrix(matrix mat);
+#define new_matrix(T, ncols, nrows)                                            \
+    ((matrix(T))__init_matrix(((ncols + 1) * sizeof(T*) +                      \
+                               (ncols + 1) * (nrows + 1) * sizeof(T) +         \
+                               MATRIX_SIZE_BYTE),                              \
+                              sizeof(T), ncols, nrows))
 
 /**
- * @brief Function to save a matrix into a file
+ * @brief Macro to properly free the memory allocated to the matrix
  *
- * @param mat
- * @param filename
+ * @param mat Matrix to free
  */
-void save_matrix(matrix mat, const char *filename);
+#define free_matrix(mat)                                                       \
+    do {                                                                       \
+        void* mat_start = (void*)((char*)(mat) - MATRIX_SIZE_BYTE);            \
+        free(mat_start);                                                       \
+        mat_start = NULL;                                                      \
+    } while (0)
 
-/**
- * @brief Function to read a saved matrix from a given filename
- *
- * @param filename
- * @return
- */
-matrix read_matrix(const char *filename);
+// printing floating-point numbers
+void __print_float_m(FILE* fp, matrix(float) mat);
+void __print_double_m(FILE* fp, matrix(double) mat);
+void __print_long_double_m(FILE* fp, matrix(long double) mat);
 
-/**
- * @brief Function to print a matrix
- *
- * @param mat Matrix to print
- */
-void print_matrix(matrix mat);
+// printing integers / chars
+void __print_char_m(FILE* fp, matrix(char) mat);
+void __print_uchar_m(FILE* fp, matrix(unsigned char) mat);
+void __print_short_m(FILE* fp, matrix(short) mat);
+void __print_ushort_m(FILE* fp, matrix(unsigned short) mat);
+void __print_int_m(FILE* fp, matrix(int) mat);
+void __print_uint_m(FILE* fp, matrix(unsigned int) mat);
+void __print_long_m(FILE* fp, matrix(long) mat);
+void __print_ulong_m(FILE* fp, matrix(unsigned long) mat);
 
-/**
- * @brief Function to print a matrix to a file pointer
- *
- * @param mat Matrix to print
- */
-void fprint_matrix(FILE *fp, matrix mat);
+#define print_matrix(mat)                                                      \
+    _Generic((mat),                                                            \
+        matrix(char): __print_char_m,                                          \
+        matrix(unsigned char): __print_uchar_m,                                \
+        matrix(short): __print_short_m,                                        \
+        matrix(unsigned short): __print_ushort_m,                              \
+        matrix(int): __print_int_m,                                            \
+        matrix(unsigned int): __print_uint_m,                                  \
+        matrix(long): __print_long_m,                                          \
+        matrix(unsigned long): __print_ulong_m,                                \
+        matrix(float): __print_float_m,                                        \
+        matrix(double): __print_double_m,                                      \
+        matrix(long double): __print_long_double_m)(stdout, mat)
+
+#define fprint_matrix(fp, mat)                                                 \
+    _Generic((mat),                                                            \
+        matrix(char): __print_char_m,                                          \
+        matrix(unsigned char): __print_uchar_m,                                \
+        matrix(short): __print_short_m,                                        \
+        matrix(unsigned short): __print_ushort_m,                              \
+        matrix(int): __print_int_m,                                            \
+        matrix(unsigned int): __print_uint_m,                                  \
+        matrix(long): __print_long_m,                                          \
+        matrix(unsigned long): __print_ulong_m,                                \
+        matrix(float): __print_float_m,                                        \
+        matrix(double): __print_double_m,                                      \
+        matrix(long double): __print_long_double_m)(fp, mat)
 
 /****************************************************************************/
 /*                                                                          */
@@ -122,21 +147,23 @@ void fprint_matrix(FILE *fp, matrix mat);
 #define NOT_SAME_SHAPE(_A, _B)                                                 \
     ((ROWS((_A)) != ROWS((_B)) || COLS((_A)) != COLS((_B))) ? (1) : (0))
 
-#define IS_EQUAL(_A, _B) \
-    (NOT_SAME_SHAPE((_A), (_B)) ? (0) : \
-     ({\
-         int equal = 1;\
-         for (int i = 1; i < COLS((_A)); i++) {\
-            for (int j = 1; j < ROWS((_A)); j++) {\
-                if ((_A)[i][j] != (_B)[i][j]) {\
-                    equal = 0;\
-                    break;\
-                }\
-            }\
-            if (!equal) break;\
-         }\
-         equal;\
-     }))
+#define IS_EQUAL(_A, _B)                                                       \
+    (NOT_SAME_SHAPE((_A), (_B)) ? (0) : ({                                     \
+        int equal = 1;                                                         \
+        for (int i = 1; i < COLS((_A)); i++) {                                 \
+            for (int j = 1; j < ROWS((_A)); j++) {                             \
+                if ((_A)[i][j] != (_B)[i][j]) {                                \
+                    equal = 0;                                                 \
+                    break;                                                     \
+                }                                                              \
+            }                                                                  \
+            if (!equal)                                                        \
+                break;                                                         \
+        }                                                                      \
+        equal;                                                                 \
+    }))
+
+#define PARALLEL_FOR _Pragma("omp parallel for schedule(static,256)")
 
 /**
  * @brief Macro to set two matrices to be equal.
@@ -146,8 +173,8 @@ void fprint_matrix(FILE *fp, matrix mat);
  */
 #define ELEM_SET_EQUAL(_targ, _from)                                           \
     do {                                                                       \
-        matrix targ = (_targ);                                                 \
-        matrix from = (_from);                                                 \
+        __typeof__(_targ) targ = (_targ);                                      \
+        __typeof__(_from) from = (_from);                                      \
         if (NOT_SAME_SHAPE(targ, from)) {                                      \
             raise_error(                                                       \
                 SIMUTIL_DIMENSION_ERROR,                                       \
@@ -171,7 +198,7 @@ void fprint_matrix(FILE *fp, matrix mat);
  */
 #define ELEM_SET_CONST(_targ, _constant)                                       \
     do {                                                                       \
-        matrix targ = (_targ);                                                 \
+        __typeof__(_targ) targ = (_targ);                                      \
         double constant = (_constant);                                         \
         const int nrows = (const int)ROWS(targ);                               \
         const int ncols = (const int)COLS(targ);                               \
@@ -192,8 +219,8 @@ void fprint_matrix(FILE *fp, matrix mat);
  */
 #define ELEM_OPER(_targ, _from, _oper)                                         \
     do {                                                                       \
-        matrix targ = (_targ);                                                 \
-        matrix from = (_from);                                                 \
+        __typeof__(_targ) targ = (_targ);                                      \
+        __typeof__(_from) from = (_from);                                      \
         if (NOT_SAME_SHAPE(targ, from)) {                                      \
             raise_error(SIMUTIL_DIMENSION_ERROR,                               \
                         "Unmatching matrix dimensions @ matrix ELEM_OPER!\n"); \
@@ -218,9 +245,9 @@ void fprint_matrix(FILE *fp, matrix mat);
  */
 #define ELEM_OPER_TARG(_targ, _lhs, _rhs, _oper)                               \
     do {                                                                       \
-        matrix targ = (_targ);                                                 \
-        matrix lhs = (_lhs);                                                   \
-        matrix rhs = (_rhs);                                                   \
+        __typeof__(_targ) targ = (_targ);                                      \
+        __typeof__(_lhs) lhs = (_lhs);                                         \
+        __typeof__(_rhs) rhs = (_rhs);                                         \
         if (NOT_SAME_SHAPE(targ, lhs) || NOT_SAME_SHAPE(targ, rhs) ||          \
             NOT_SAME_SHAPE(lhs, rhs)) {                                        \
             raise_error(                                                       \
@@ -255,8 +282,8 @@ void fprint_matrix(FILE *fp, matrix mat);
  */
 #define ELEM_OPER_SLICE(_targ, _from, _oper, _l, _r, _u, _d)                   \
     do {                                                                       \
-        matrix targ = (_targ);                                                 \
-        matrix from = (_from);                                                 \
+        __typeof__(_targ) targ = (_targ);                                      \
+        __typeof__(_from) from = (_from);                                      \
         int l = (_l);                                                          \
         int r = (_r);                                                          \
         int u = (_u);                                                          \
@@ -293,9 +320,9 @@ void fprint_matrix(FILE *fp, matrix mat);
  */
 #define ELEM_OPER_SLICE_LIKE(_targ, _from, _oper, _like)                       \
     do {                                                                       \
-        matrix targ = (_targ);                                                 \
-        matrix from = (_from);                                                 \
-        matrix like = (_like);                                                 \
+        __typeof__(_targ) targ = (_targ);                                      \
+        __typeof__(_from) from = (_from);                                      \
+        __typeof__(_like) like = (_like);                                      \
         if (ROWS(like) > ROWS(targ) || COLS(like) > COLS(targ)) {              \
             raise_error(SIMUTIL_DIMENSION_ERROR,                               \
                         "Unmatching matrix dimensions @ matrix "               \
@@ -326,7 +353,7 @@ void fprint_matrix(FILE *fp, matrix mat);
  */
 #define CONST_OPER(_targ, _constant, _oper)                                    \
     do {                                                                       \
-        matrix targ = (_targ);                                                 \
+        __typeof__(_targ) targ = (_targ);                                      \
         const int ncols = (const int)COLS(targ);                               \
         const int nrows = (const int)ROWS(targ);                               \
         const double constant = (double)(_constant);                           \
@@ -356,7 +383,7 @@ void fprint_matrix(FILE *fp, matrix mat);
  */
 #define CONST_OPER_SLICE(_targ, _constant, _oper, _l, _r, _u, _d)              \
     do {                                                                       \
-        matrix targ = (_targ);                                                 \
+        __typeof__(_targ) targ = (_targ);                                      \
         const double constant = (double)(_constant);                           \
         int l = (_l);                                                          \
         int r = (_r);                                                          \
@@ -391,8 +418,8 @@ void fprint_matrix(FILE *fp, matrix mat);
  */
 #define CONST_OPER_SLICE_LIKE(_targ, _constant, _oper, _like)                  \
     do {                                                                       \
-        matrix targ = (_targ);                                                 \
-        matrix like = (_like);                                                 \
+        __typeof__(_targ) targ = (_targ);                                      \
+        __typeof__(_like) like = (_like);                                      \
         const double constant = (double)(_constant);                           \
         if (ROWS(like) > ROWS(targ) || COLS(like) > COLS(targ)) {              \
             raise_error(SIMUTIL_DIMENSION_ERROR,                               \

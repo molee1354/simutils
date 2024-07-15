@@ -8,14 +8,14 @@
 
 #define INIT_TENSOR(mem, out, row, col, dep)                                   \
     do {                                                                       \
-        *(((unsigned int *)mem) + 0) = row;                                    \
-        *(((unsigned int *)mem) + 1) = col;                                    \
-        *(((unsigned int *)mem) + 2) = dep;                                    \
-        out = (tensor)((char *)mem + TENSOR_SIZE_BYTE);                        \
-        out[1] = (double **)calloc(1, (row * col + 1) * sizeof(double *));     \
+        *(((unsigned int*)mem) + 0) = row;                                     \
+        *(((unsigned int*)mem) + 1) = col;                                     \
+        *(((unsigned int*)mem) + 2) = dep;                                     \
+        out = (tensor)((char*)mem + TENSOR_SIZE_BYTE);                         \
+        out[1] = (double**)calloc(1, (row * col + 1) * sizeof(double*));       \
         CHECK(out[1]);                                                         \
         out[1][1] =                                                            \
-            (double *)calloc(1, (row * col * dep + 1) * sizeof(double));       \
+            (double*)calloc(1, (row * col * dep + 1) * sizeof(double));        \
         CHECK(out[1][1]);                                                      \
         int i, j;                                                              \
         for (j = 2; j <= (int)col; j++)                                        \
@@ -29,20 +29,20 @@
     } while (0)
 
 tensor new_tensor(unsigned int ncols, unsigned int nrows, unsigned int ndeps) {
-    void *ten_mem =
-        calloc(1, (size_t)((ncols + 1) * sizeof(double **)) + TENSOR_SIZE_BYTE);
+    void* ten_mem =
+        calloc(1, (size_t)((ncols + 1) * sizeof(double**)) + TENSOR_SIZE_BYTE);
     CHECK(ten_mem);
     tensor out;
     INIT_TENSOR(ten_mem, out, ncols, nrows, ndeps);
     return out;
 }
 
-void save_tensor(tensor ten, const char *filename) {
-    FILE *file = fopen(filename, "wb");
+void save_tensor(tensor ten, const char* filename) {
+    FILE* file = fopen(filename, "wb");
     CHECK(file);
-    const int ncols = (const int)DIM1(ten);
-    const int nrows = (const int)DIM2(ten);
-    const int ndeps = (const int)DIM3(ten);
+    const int ncols = (const int)DIM1_t(ten);
+    const int nrows = (const int)DIM2_t(ten);
+    const int ndeps = (const int)DIM3_t(ten);
 
     fwrite(&nrows, sizeof(nrows), 1, file);
     fwrite(&ncols, sizeof(ncols), 1, file);
@@ -55,8 +55,8 @@ void save_tensor(tensor ten, const char *filename) {
     fclose(file);
 }
 
-tensor read_tensor(const char *filename) {
-    FILE *file = fopen(filename, "rb");
+tensor read_tensor(const char* filename) {
+    FILE* file = fopen(filename, "rb");
     CHECK(file);
     int nrows;
     if (!fread(&nrows, sizeof(nrows), 1, file)) {
@@ -77,8 +77,7 @@ tensor read_tensor(const char *filename) {
         exit(EXIT_FAILURE);
     }
     tensor out;
-    void *ten_mem =
-        calloc(1, (ncols + 1) * sizeof(double *) + TENSOR_SIZE_BYTE);
+    void* ten_mem = calloc(1, (ncols + 1) * sizeof(double*) + TENSOR_SIZE_BYTE);
     CHECK(ten_mem);
     INIT_TENSOR(ten_mem, out, ncols, nrows, ndeps);
     for (int i = 1; i <= ncols; i++) {
@@ -97,9 +96,9 @@ tensor read_tensor(const char *filename) {
 }
 
 void print_tensor(tensor ten) {
-    const int ncol = (const int)DIM1(ten); // nx
-    const int nrow = (const int)DIM2(ten); // ny
-    const int ndep = (const int)DIM3(ten); // nz
+    const int ncol = (const int)DIM1_t(ten); // nx
+    const int nrow = (const int)DIM2_t(ten); // ny
+    const int ndep = (const int)DIM3_t(ten); // nz
     printf("[\n ");
     int i, j, k;
     for (k = 1; k <= ndep; k++) {
@@ -117,10 +116,10 @@ void print_tensor(tensor ten) {
     printf("\n]\n ");
 }
 
-void fprint_tensor(FILE *fp, tensor ten) {
-    const int ncol = (const int)DIM1(ten); // nx
-    const int nrow = (const int)DIM2(ten); // ny
-    const int ndep = (const int)DIM3(ten); // nz
+void fprint_tensor(FILE* fp, tensor ten) {
+    const int ncol = (const int)DIM1_t(ten); // nx
+    const int nrow = (const int)DIM2_t(ten); // ny
+    const int ndep = (const int)DIM3_t(ten); // nz
     int i, j, k;
     for (k = 1; k <= ndep; k++) {
         for (j = 1; j <= nrow; j++) {
@@ -135,12 +134,12 @@ void fprint_tensor(FILE *fp, tensor ten) {
 }
 
 void free_tensor(tensor ten) {
-    free((char *)(ten[1][1]));
+    free((char*)(ten[1][1]));
     ten[1][1] = NULL;
 
-    free((char *)(ten[1]));
+    free((char*)(ten[1]));
     ten[1] = NULL;
 
-    void *ten_mem = (void *)((char *)ten - TENSOR_SIZE_BYTE);
+    void* ten_mem = (void*)((char*)ten - TENSOR_SIZE_BYTE);
     free(ten_mem);
 }

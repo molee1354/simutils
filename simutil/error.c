@@ -1,5 +1,6 @@
 #include "error.h"
 #include <stdarg.h>
+#include <stdio.h>
 
 static void error_type(error_t err) {
     switch (err) {
@@ -18,7 +19,7 @@ static void error_type(error_t err) {
     }
 }
 
-void raise_error(error_t err, const char *format, ...) {
+void raise_error(error_t err, const char* format, ...) {
     va_list args;
     va_start(args, format);
     error_type(err);
