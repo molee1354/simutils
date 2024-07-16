@@ -11,7 +11,8 @@
 void* __init_matrix3(size_t size, size_t elem_size, size_t ncols, size_t nrows,
                      size_t ndeps) {
     // Allocate memory
-    void* mat_start = calloc(1, size);
+    // void* mat_start = calloc(1, size);
+    void* mat_start = aligned_alloc(elem_size, size);
     CHECK(mat_start);
 
     // Store dimensions at the beginning of the allocated memory

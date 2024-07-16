@@ -10,8 +10,9 @@
         }                                                                      \
     } while (0)
 
-void* __init_vector(size_t size, size_t n_elem) {
-    void* vec_start = calloc(1, size);
+void* __init_vector(size_t size, size_t elem_size, size_t n_elem) {
+    // void* vec_start = calloc(1, size);
+    void* vec_start = aligned_alloc(elem_size, size);
     CHECK(vec_start);
     *(((size_t*)vec_start) + 0) = n_elem;
     char* out = (char*)vec_start + VECTOR_SIZE_BYTE;

@@ -12,7 +12,8 @@
     } while (0)
 
 void* __init_matrix(size_t size, size_t elem_size, size_t ncols, size_t nrows) {
-    void* mat_start = calloc(1, size);
+    // void* mat_start = calloc(1, size);
+    void* mat_start = aligned_alloc(elem_size, size);
     CHECK(mat_start);
     *((size_t*)mat_start + 0) = ncols;
     *((size_t*)mat_start + 1) = nrows;

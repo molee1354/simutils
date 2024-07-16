@@ -1,10 +1,10 @@
-CC = cc
+CC = clang
 
 CFLAGS = -Wall -Wextra -Wpedantic -Werror
 CFLAGS += -O3
-CFLAGS += -march=native -mavx -ftree-vectorize -fopt-info-vec
+CFLAGS += -march=native -mavx -ftree-vectorize 
 CFLAGS += -fPIC
-CFLAGS += -fopenmp
+#CFLAGS += -fopenmp -fopt-info-vec
 
 LDFLAGS = -lm
 

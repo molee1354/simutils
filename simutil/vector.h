@@ -38,13 +38,14 @@
         }                                                                      \
     } while (0)
 
-void* __init_vector(size_t size, size_t n_elem);
+void* __init_vector(size_t size, size_t elem_size, size_t n_elem);
 
 void __resize_vector(void** vec_mem, size_t new_length, size_t elem_size);
 
 #define new_vector(T, length)                                                  \
-    ((vector(T))__init_vector(                                                 \
-        sizeof(T) * ((size_t)(length) + 1) + VECTOR_SIZE_BYTE, (length)))
+    ((vector(T))__init_vector(sizeof(T) * ((size_t)(length) + 1) +             \
+                                  VECTOR_SIZE_BYTE,                            \
+                              sizeof(T), (length)))
 
 void __append_element(void** vec_mem, void* elem, size_t elem_size);
 
@@ -84,9 +85,9 @@ void __print_ulong_v(FILE* fp, vector(unsigned long) vec);
 #define print_vector(vec)                                                      \
     _Generic((vec),                                                            \
         vector(char): __print_char_v,                                          \
-        vector(unsigned char): __print_uchar_v,                                          \
+        vector(unsigned char): __print_uchar_v,                                \
         vector(short): __print_short_v,                                        \
-        vector(unsigned short): __print_ushort_v,                                        \
+        vector(unsigned short): __print_ushort_v,                              \
         vector(int): __print_int_v,                                            \
         vector(unsigned int): __print_uint_v,                                  \
         vector(long): __print_long_v,                                          \
@@ -98,9 +99,9 @@ void __print_ulong_v(FILE* fp, vector(unsigned long) vec);
 #define fprint_vector(fp, vec)                                                 \
     _Generic((vec),                                                            \
         vector(char): __print_char_v,                                          \
-        vector(unsigned char): __print_uchar_v,                                          \
+        vector(unsigned char): __print_uchar_v,                                \
         vector(short): __print_short_v,                                        \
-        vector(unsigned short): __print_ushort_v,                                        \
+        vector(unsigned short): __print_ushort_v,                              \
         vector(int): __print_int_v,                                            \
         vector(unsigned int): __print_uint_v,                                  \
         vector(long): __print_long_v,                                          \
