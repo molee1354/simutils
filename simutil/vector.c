@@ -2,14 +2,6 @@
 #include "error.h"
 #include <string.h>
 
-#define CHECK(p)                                                               \
-    do {                                                                       \
-        if (!p) {                                                              \
-            raise_error(SIMUTIL_ALLOCATE_ERROR,                                \
-                        "NULL allocation for vector!\n");                      \
-        }                                                                      \
-    } while (0)
-
 void* __init_vector(size_t size, size_t elem_size, size_t n_elem) {
     // void* vec_start = calloc(1, size);
     void* vec_start = aligned_alloc(elem_size, size);

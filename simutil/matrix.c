@@ -2,15 +2,6 @@
 #include "error.h"
 #include <stdio.h>
 
-#define CHECK(p)                                                               \
-    do {                                                                       \
-        if (!p) {                                                              \
-            raise_error(SIMUTIL_ALLOCATE_ERROR,                                \
-                        "NULL allocation for matrix!\n");                      \
-            return NULL;                                                       \
-        }                                                                      \
-    } while (0)
-
 void* __init_matrix(size_t size, size_t elem_size, size_t ncols, size_t nrows) {
     // void* mat_start = calloc(1, size);
     void* mat_start = aligned_alloc(elem_size, size);

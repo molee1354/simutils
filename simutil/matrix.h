@@ -1,8 +1,6 @@
 #ifndef SIMUTIL_MATRIX_H
 #define SIMUTIL_MATRIX_H
 
-#include <omp.h>
-
 #include "error.h"
 #include "simutil_includes.h"
 
@@ -162,8 +160,6 @@ void __print_ulong_m(FILE* fp, matrix(unsigned long) mat);
         }                                                                      \
         equal;                                                                 \
     }))
-
-#define PARALLEL_FOR _Pragma("omp parallel for schedule(static,256)")
 
 /**
  * @brief Macro to set two matrices to be equal.

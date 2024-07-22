@@ -1,13 +1,5 @@
 #include "matrix3.h"
 
-#define CHECK(p)                                                               \
-    do {                                                                       \
-        if (!p) {                                                              \
-            raise_error(SIMUTIL_ALLOCATE_ERROR,                                \
-                        "NULL allocation for matrix!\n");                      \
-        }                                                                      \
-    } while (0)
-
 void* __init_matrix3(size_t size, size_t elem_size, size_t ncols, size_t nrows,
                      size_t ndeps) {
     // Allocate memory

@@ -11,4 +11,13 @@ typedef enum {
 
 void raise_error(error_t err, const char* format, ...);
 
+#define CHECK(p)                                                               \
+    do {                                                                       \
+        if (!p) {                                                              \
+            raise_error(SIMUTIL_ALLOCATE_ERROR,                                \
+                        "NULL allocation for matrix!\n");                      \
+        }                                                                      \
+    } while (0)
+
+
 #endif

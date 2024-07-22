@@ -1,11 +1,5 @@
 #include "tensor.h"
 
-#define CHECK(p)                                                               \
-    if (!p) {                                                                  \
-        raise_error(SIMUTIL_ALLOCATE_ERROR, "NULL allocation for matrix!\n");  \
-        exit(EXIT_FAILURE);                                                    \
-    }
-
 #define INIT_TENSOR(mem, out, row, col, dep)                                   \
     do {                                                                       \
         *(((unsigned int*)mem) + 0) = row;                                     \
