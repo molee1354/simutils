@@ -19,5 +19,4 @@ void raise_error(error_t err, const char* format, ...);
         }                                                                      \
     } while (0)
 
-
 #endif

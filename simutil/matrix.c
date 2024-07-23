@@ -2,7 +2,8 @@
 #include "error.h"
 #include <stdio.h>
 
-void* __init_matrix(size_t size, size_t elem_size, size_t ncols, size_t nrows) {
+/* void* __init_matrix(size_t size, size_t elem_size, size_t ncols, size_t
+nrows) {
     // void* mat_start = calloc(1, size);
     void* mat_start = aligned_alloc(elem_size, size);
     CHECK(mat_start);
@@ -17,9 +18,9 @@ void* __init_matrix(size_t size, size_t elem_size, size_t ncols, size_t nrows) {
         CHECK(out[i]);
     }
     return (void*)out;
-}
+} */
 
-#define PRINT_FUNC(name, type, fmt)                                            \
+/* #define PRINT_FUNC(name, type, fmt) \
     void __print##name##_m(FILE* fp, type mat) {                               \
         const int nrow = ROWS(mat);                                            \
         const int ncol = COLS(mat);                                            \
@@ -37,19 +38,19 @@ void* __init_matrix(size_t size, size_t elem_size, size_t ncols, size_t nrows) {
             (j == nrow) ? fprintf(fp, "]") : fprintf(fp, "]\n ");              \
         }                                                                      \
         fprintf(fp, "]\n");                                                    \
-    }
+    } */
 
 // printing floating-point numbers
-PRINT_FUNC(_float, matrix(float), "%6.3f")
+/* PRINT_FUNC(_float, matrix(float), "%6.3f")
 PRINT_FUNC(_double, matrix(double), "%6.3f")
-PRINT_FUNC(_long_double, matrix(long double), "%6.3Lf")
+PRINT_FUNC(_long_double, matrix(long double), "%6.3Lf") */
 
 // printing integers / char
-PRINT_FUNC(_char, matrix(char), "%c")
+/* PRINT_FUNC(_char, matrix(char), "%c")
 PRINT_FUNC(_uchar, matrix(unsigned char), "%3d")
 PRINT_FUNC(_short, matrix(short), "%3hd")
 PRINT_FUNC(_ushort, matrix(unsigned short), "%3hd")
 PRINT_FUNC(_int, matrix(int), "%3d")
 PRINT_FUNC(_uint, matrix(unsigned int), "%3u")
 PRINT_FUNC(_long, matrix(long), "%3ld")
-PRINT_FUNC(_ulong, matrix(unsigned long), "%3lu")
+PRINT_FUNC(_ulong, matrix(unsigned long), "%3lu") */

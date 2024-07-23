@@ -1,9 +1,7 @@
 #include "matrix3.h"
 
-void* __init_matrix3(size_t size, size_t elem_size, size_t ncols, size_t nrows,
+/* void* __init_matrix3(size_t size, size_t elem_size, size_t ncols, size_t nrows,
                      size_t ndeps) {
-    // Allocate memory
-    // void* mat_start = calloc(1, size);
     void* mat_start = aligned_alloc(elem_size, size);
     CHECK(mat_start);
 
@@ -37,9 +35,9 @@ void* __init_matrix3(size_t size, size_t elem_size, size_t ncols, size_t nrows,
     }
 
     return (void*)out;
-}
+} */
 
-#define PRINT_FUNC(name, type, fmt)                                            \
+/* #define PRINT_FUNC(name, type, fmt)                                            \
     void __print##name##_m3(FILE* fp, type mat3) {                             \
         const int ncol = (const int)DIM1(mat3);                                \
         const int nrow = (const int)DIM2(mat3);                                \
@@ -62,19 +60,19 @@ void* __init_matrix3(size_t size, size_t elem_size, size_t ncols, size_t nrows,
             (k == ndep) ? fprintf(fp, "]") : fprintf(fp, "]\n ");              \
         }                                                                      \
         fprintf(fp, "\n]\n ");                                                 \
-    }
+    } */
 
 // printing floating-point numbers
-PRINT_FUNC(_float, matrix3(float), "%6.3f")
+/* PRINT_FUNC(_float, matrix3(float), "%6.3f")
 PRINT_FUNC(_double, matrix3(double), "%6.3f")
-PRINT_FUNC(_long_double, matrix3(long double), "%6.3Lf")
+PRINT_FUNC(_long_double, matrix3(long double), "%6.3Lf") */
 
 // printing integers / char
-PRINT_FUNC(_char, matrix3(char), "%c")
+/* PRINT_FUNC(_char, matrix3(char), "%c")
 PRINT_FUNC(_uchar, matrix3(unsigned char), "%3hd")
 PRINT_FUNC(_short, matrix3(short), "%3hd")
 PRINT_FUNC(_ushort, matrix3(unsigned short), "%3hd")
 PRINT_FUNC(_int, matrix3(int), "%3d")
 PRINT_FUNC(_uint, matrix3(unsigned int), "%3u")
 PRINT_FUNC(_long, matrix3(long), "%3ld")
-PRINT_FUNC(_ulong, matrix3(unsigned long), "%3lu")
+PRINT_FUNC(_ulong, matrix3(unsigned long), "%3lu") */
