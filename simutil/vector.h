@@ -1,24 +1,9 @@
 #ifndef SIMUTIL_VECTOR_H
 #define SIMUTIL_VECTOR_H
 
-#include "error.h"
-#include "simutil_includes.h"
-
-#define vector(T) T*
-
-#define VECTOR_SIZE_BYTE (size_t)(sizeof(size_t) * 1)
-
-/****************************************************************************/
-/*                                                                          */
-/*                        Basic Functions and Macros                        */
-/*                                                                          */
-/****************************************************************************/
-
-/**
- * @brief Macro to access the size byte of the vector
- *
- */
-#define LENGTH(vec) ((int)(*((size_t*)(((char*)(vec) - VECTOR_SIZE_BYTE)) + 0)))
+#ifndef SIMUTIL_VECTOR_BASE_H
+#include "vector_base.h"
+#endif
 
 /**
  * @brief Macro to create a new vector based on an existing stack-allocated
@@ -38,14 +23,7 @@
         }                                                                      \
     } while (0)
 
-void* __init_vector(size_t size, size_t elem_size, size_t n_elem);
-
 void __resize_vector(void** vec_mem, size_t new_length, size_t elem_size);
-
-#define new_vector(T, length)                                                  \
-    ((vector(T))__init_vector(sizeof(T) * ((size_t)(length) + 1) +             \
-                                  VECTOR_SIZE_BYTE,                            \
-                              sizeof(T), (length)))
 
 void __append_element(void** vec_mem, void* elem, size_t elem_size);
 
@@ -58,13 +36,6 @@ void __append_element(void** vec_mem, void* elem, size_t elem_size);
 #define resize_vector(vec, resize)                                             \
     do {                                                                       \
         __resize_vector((void**)(vec), (resize), sizeof(**(vec)));             \
-    } while (0)
-
-#define free_vector(vec)                                                       \
-    do {                                                                       \
-        void* vec_mem = (void*)((char*)(vec) - VECTOR_SIZE_BYTE);              \
-        free(vec_mem);                                                         \
-        vec_mem = NULL;                                                        \
     } while (0)
 
 // macro to generate printing functions
