@@ -100,4 +100,6 @@ PRINT_FUNC(_ulong, matrix3(unsigned long), "%3lu")
         matrix3(double): __print_double_m3,                                    \
         matrix3(long double): __print_long_double_m3)(fp, mat3)
 
+#undef PRINT_FUNC
+
 #endif

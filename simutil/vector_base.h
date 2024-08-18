@@ -22,10 +22,10 @@
 
 static inline void* __init_vector(size_t size, size_t n_elem) {
     void* vec_start = calloc(1, size);
-    CHECK(vec_start);
+    SIMUTIL_NULLPTR_CHECK(vec_start);
     *(((size_t*)vec_start) + 0) = n_elem;
     char* out = (char*)vec_start + VECTOR_SIZE_BYTE;
-    CHECK(out);
+    SIMUTIL_NULLPTR_CHECK(out);
     return (void*)out;
 }
 

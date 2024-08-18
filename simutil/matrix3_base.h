@@ -32,17 +32,17 @@
 static inline void* __init_matrix3(size_t size, size_t elem_size, size_t ncols,
                                    size_t nrows, size_t ndeps) {
     void* mat_start = calloc(1, size);
-    CHECK(mat_start);
+    SIMUTIL_NULLPTR_CHECK(mat_start);
     *((size_t*)mat_start + 0) = ncols;
     *((size_t*)mat_start + 1) = nrows;
     *((size_t*)mat_start + 2) = ndeps;
     char*** out = (char***)((char*)mat_start + MATRIX3_SIZE_BYTE);
-    CHECK(out);
+    SIMUTIL_NULLPTR_CHECK(out);
 #ifndef ROW_MAJOR
     char** row_pointers = (char**)(out + (ncols + 1));
-    CHECK(row_pointers);
+    SIMUTIL_NULLPTR_CHECK(row_pointers);
     char* data_start = (char*)(row_pointers + ((ncols + 1) * (nrows + 1)));
-    CHECK(data_start);
+    SIMUTIL_NULLPTR_CHECK(data_start);
 
     for (size_t i = 1; i <= ncols; i++) {
         out[i] = row_pointers + i * nrows;
@@ -50,14 +50,14 @@ static inline void* __init_matrix3(size_t size, size_t elem_size, size_t ncols,
             out[i][j] =
                 data_start +
                 (i * (nrows + 1) * (ndeps + 1) + j * (ndeps + 1)) * elem_size;
-            CHECK(out[i][j]);
+            SIMUTIL_NULLPTR_CHECK(out[i][j]);
         }
     }
 #else
     out[1] = (char**)calloc(1, (size_t)(nrows * ncols + 1) * sizeof(void*));
-    CHECK(out[1]);
+    SIMUTIL_NULLPTR_CHECK(out[1]);
     out[1][1] = (char*)calloc(1, (nrows * ncols * ndeps + 1) * elem_size);
-    CHECK(out[1][1]);
+    SIMUTIL_NULLPTR_CHECK(out[1][1]);
     int i, j;
     for (j = 2; j <= (int)ncols; j++)
         out[1][j] = out[1][j - 1] + (ndeps * elem_size);

@@ -23,19 +23,23 @@
         }                                                                      \
     } while (0)
 
-void __resize_vector(void** vec_mem, size_t new_length, size_t elem_size);
+int __resize_vector(void** vec_mem, size_t new_length, size_t elem_size);
 
-void __append_element(void** vec_mem, void* elem, size_t elem_size);
+int __append_element(void** vec_mem, void* elem, size_t elem_size);
 
 #define grow_vector(vec, elem)                                                 \
     do {                                                                       \
-        __append_element((void**)(vec), &(__typeof__(**(vec))){elem},          \
-                         sizeof(**(vec)));                                     \
+        if (__append_element((void**)(vec), &(__typeof__(**(vec))){elem},      \
+                             sizeof(**(vec))))                                 \
+            raise_error(SIMUTIL_NULL_ERROR,                                    \
+                        "Received null pointer in 'grow_vector()'\n");         \
     } while (0)
 
 #define resize_vector(vec, resize)                                             \
     do {                                                                       \
-        __resize_vector((void**)(vec), (resize), sizeof(**(vec)));             \
+        if (__resize_vector((void**)(vec), (resize), sizeof(**(vec))))         \
+            raise_error(SIMUTIL_NULL_ERROR,                                    \
+                        "Received null pointer in 'resize_vector()'\n");       \
     } while (0)
 
 // macro to generate printing functions
@@ -100,4 +104,5 @@ PRINT_FUNC(_ulong, vector(unsigned long), "%3lu")
         vector(double): __print_double_v,                                      \
         vector(long double): __print_long_double_v)(fp, vec)
 
+#undef PRINT_FUNC
 #endif

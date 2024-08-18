@@ -39,17 +39,17 @@
 static inline void* __init_matrix(size_t size, size_t elem_size, size_t ncols,
                                   size_t nrows) {
     void* mat_start = calloc(1, size);
-    CHECK(mat_start);
+    SIMUTIL_NULLPTR_CHECK(mat_start);
     *((size_t*)mat_start + 0) = ncols;
     *((size_t*)mat_start + 1) = nrows;
     char** out = (char**)((char*)mat_start + MATRIX_SIZE_BYTE);
-    CHECK(out);
+    SIMUTIL_NULLPTR_CHECK(out);
 #ifndef ROW_MAJOR
     char* data_start = (char*)(out + (ncols + 1));
-    CHECK(data_start);
+    SIMUTIL_NULLPTR_CHECK(data_start);
     for (size_t i = 1; i <= ncols; i++) {
         out[i] = data_start + i * (nrows + 1) * elem_size;
-        CHECK(out[i]);
+        SIMUTIL_NULLPTR_CHECK(out[i]);
     }
 #else
     out[1] = (char*)calloc(
