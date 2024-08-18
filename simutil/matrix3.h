@@ -60,12 +60,12 @@ static inline void* __init_matrix3(size_t size, size_t elem_size, size_t ncols,
     CHECK(out[1][1]);
     int i, j;
     for (j = 2; j <= (int)ncols; j++)
-        out[1][j] = out[1][j - 1] + ndeps;
+        out[1][j] = out[1][j - 1] + (ndeps * elem_size);
     for (i = 2; i <= (int)nrows; i++) {
         out[i] = out[i - 1] + ncols;
-        out[i][1] = out[i - 1][1] + ncols * ndeps;
+        out[i][1] = out[i - 1][1] + (ncols * ndeps * elem_size);
         for (j = 2; j <= (int)ncols; j++)
-            out[i][j] = out[i][j - 1] + ndeps;
+            out[i][j] = out[i][j - 1] + (ndeps * elem_size);
     }
 #endif
     return (void*)out;
@@ -151,31 +151,6 @@ static inline void* __init_matrix3(size_t size, size_t elem_size, size_t ncols,
     }
 
 #endif
-
-#define PRINT_FUNC(name, type, fmt)                                            \
-    static inline void __print##name##_m3(FILE* fp, type mat3) {               \
-        const int ncol = (const int)DIM1(mat3);                                \
-        const int nrow = (const int)DIM2(mat3);                                \
-        const int ndep = (const int)DIM3(mat3);                                \
-        fprintf(fp, "[\n ");                                                   \
-        int i, j, k;                                                           \
-        for (k = 1; k <= ndep; k++) {                                          \
-            fprintf(fp, "[");                                                  \
-            for (j = 1; j <= nrow; j++) {                                      \
-                (j == 1) ? fprintf(fp, "[") : fprintf(fp, " [");               \
-                for (i = 1; i <= ncol; i++) {                                  \
-                    if (i != ncol) {                                           \
-                        fprintf(fp, fmt, mat3[i][j][k]);                       \
-                        fprintf(fp, ", ");                                     \
-                    } else                                                     \
-                        fprintf(fp, fmt, mat3[i][j][k]);                       \
-                }                                                              \
-                (j == nrow) ? fprintf(fp, "]") : fprintf(fp, "]\n ");          \
-            }                                                                  \
-            (k == ndep) ? fprintf(fp, "]") : fprintf(fp, "]\n ");              \
-        }                                                                      \
-        fprintf(fp, "\n]\n ");                                                 \
-    }
 
 // printing floating-point numbers
 PRINT_FUNC(_float, matrix3(float), "%6.3f")
