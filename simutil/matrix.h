@@ -1,98 +1,74 @@
 #ifndef SIMUTIL_MATRIX_H
 #define SIMUTIL_MATRIX_H
 
-#include <omp.h>
-
-#include "error.h"
-#include "simutil_includes.h"
-
-#define matrix(T) T**
-
-#define MATRIX_SIZE_BYTE (size_t)(sizeof(size_t) * 2)
+#ifndef SIMUTIL_MATRIX_BASE_H
+#include "matrix_base.h"
+#endif
 
 /****************************************************************************/
 /*                                                                          */
-/*                        Basic Functions and Macros                        */
+/*                            Print Definitions                             */
 /*                                                                          */
 /****************************************************************************/
 
-/**
- * @brief Macro to access the size byte of the matrix
- *
- */
-#define COLS(mat)                                                              \
-    ((int)(*(                                                                  \
-        (size_t*)(((char*)(mat) - MATRIX_SIZE_BYTE + sizeof(size_t) * 0)))))
-
-#define ROWS(mat)                                                              \
-    ((int)(*(                                                                  \
-        (size_t*)(((char*)(mat) - MATRIX_SIZE_BYTE + sizeof(size_t) * 1)))))
-
-#define FROM_MATRIX(_from, _targ, _ncols, _nrows)                              \
-    do {                                                                       \
-        int cols = (int)(_nrows);                                              \
-        int rows = (int)(_ncols);                                              \
-        __typeof__(_targ) targ = (_targ);                                      \
-        if (ROWS(targ) != _nrows || COLS(targ) != _ncols)                      \
-            raise_error(SIMUTIL_DIMENSION_ERROR,                               \
-                        "Unmatching dimensions for vector creation!\n");       \
-        for (int i = 0; i < (int)rows; i++) {                                  \
-            for (int j = 0; j < (int)cols; j++) {                              \
-                targ[i + 1][j + 1] = (_from)[j][i];                            \
+#ifndef ROW_MAJOR
+#define PRINT_FUNC(name, type, fmt)                                            \
+    static inline void __print##name##_m(FILE* fp, type mat) {                 \
+        const int nrow = ROWS(mat);                                            \
+        const int ncol = COLS(mat);                                            \
+        fprintf(fp, "[");                                                      \
+        int i, j;                                                              \
+        for (j = 1; j <= nrow; j++) {                                          \
+            fprintf(fp, "[");                                                  \
+            for (i = 1; i <= ncol; i++) {                                      \
+                if (i != ncol) {                                               \
+                    fprintf(fp, fmt, mat[i][j]);                               \
+                    fprintf(fp, ", ");                                         \
+                } else                                                         \
+                    fprintf(fp, fmt, mat[i][j]);                               \
             }                                                                  \
+            (j == nrow) ? fprintf(fp, "]") : fprintf(fp, "]\n ");              \
         }                                                                      \
-    } while (0)
-
-/**
- * @brief Function to initialize the memory needed for a new matrix.
- *
- * @param size The size of the total memory block used by the matrix
- * @param elem_size The size of a single element in the matrix
- * @param ncols The number of columns in the matrix
- * @param nrows The number of rows in the matrix
- */
-void* __init_matrix(size_t size, size_t elem_size, size_t ncols, size_t nrows);
-
-/**
- * @brief Macro to create a new matrix of type T
- *
- * @param T Type of matrix element
- * @param ncols Number of columns
- * @param nrows Number of rows
- */
-#define new_matrix(T, ncols, nrows)                                            \
-    ((matrix(T))__init_matrix(((ncols + 1) * sizeof(T*) +                      \
-                               (ncols + 1) * (nrows + 1) * sizeof(T) +         \
-                               MATRIX_SIZE_BYTE),                              \
-                              sizeof(T), ncols, nrows))
-
-/**
- * @brief Macro to properly free the memory allocated to the matrix
- *
- * @param mat Matrix to free
- */
-#define free_matrix(mat)                                                       \
-    do {                                                                       \
-        void* mat_start = (void*)((char*)(mat) - MATRIX_SIZE_BYTE);            \
-        free(mat_start);                                                       \
-        mat_start = NULL;                                                      \
-    } while (0)
+        fprintf(fp, "]\n");                                                    \
+    }
+#else
+#define PRINT_FUNC(name, type, fmt)                                            \
+    static inline void __print##name##_m(FILE* fp, type mat) {                 \
+        const int nrow = ROWS(mat);                                            \
+        const int ncol = COLS(mat);                                            \
+        fprintf(fp, "[");                                                      \
+        int i, j;                                                              \
+        for (j = 1; j <= nrow; j++) {                                          \
+            fprintf(fp, "[");                                                  \
+            for (i = 1; i <= ncol; i++) {                                      \
+                if (i != ncol) {                                               \
+                    fprintf(fp, fmt, mat[j][i]);                               \
+                    fprintf(fp, ", ");                                         \
+                } else                                                         \
+                    fprintf(fp, fmt, mat[j][i]);                               \
+            }                                                                  \
+            (j == nrow) ? fprintf(fp, "]") : fprintf(fp, "]\n ");              \
+        }                                                                      \
+        fprintf(fp, "]\n");                                                    \
+    }
+#endif
 
 // printing floating-point numbers
-void __print_float_m(FILE* fp, matrix(float) mat);
-void __print_double_m(FILE* fp, matrix(double) mat);
-void __print_long_double_m(FILE* fp, matrix(long double) mat);
+PRINT_FUNC(_float, matrix(float), "%6.3f")
+PRINT_FUNC(_double, matrix(double), "%6.3f")
+PRINT_FUNC(_long_double, matrix(long double), "%6.3Lf")
 
-// printing integers / chars
-void __print_char_m(FILE* fp, matrix(char) mat);
-void __print_uchar_m(FILE* fp, matrix(unsigned char) mat);
-void __print_short_m(FILE* fp, matrix(short) mat);
-void __print_ushort_m(FILE* fp, matrix(unsigned short) mat);
-void __print_int_m(FILE* fp, matrix(int) mat);
-void __print_uint_m(FILE* fp, matrix(unsigned int) mat);
-void __print_long_m(FILE* fp, matrix(long) mat);
-void __print_ulong_m(FILE* fp, matrix(unsigned long) mat);
+// printing integers / char
+PRINT_FUNC(_char, matrix(char), "%c")
+PRINT_FUNC(_uchar, matrix(unsigned char), "%3d")
+PRINT_FUNC(_short, matrix(short), "%3hd")
+PRINT_FUNC(_ushort, matrix(unsigned short), "%3hd")
+PRINT_FUNC(_int, matrix(int), "%3d")
+PRINT_FUNC(_uint, matrix(unsigned int), "%3u")
+PRINT_FUNC(_long, matrix(long), "%3ld")
+PRINT_FUNC(_ulong, matrix(unsigned long), "%3lu")
 
+/* Function-like macros for printing numerical matrices */
 #define print_matrix(mat)                                                      \
     _Generic((mat),                                                            \
         matrix(char): __print_char_m,                                          \
@@ -126,6 +102,39 @@ void __print_ulong_m(FILE* fp, matrix(unsigned long) mat);
 /*                            Macro Definitions                             */
 /*                                                                          */
 /****************************************************************************/
+
+#ifndef ROW_MAJOR
+#define FROM_MATRIX(_from, _targ, _ncols, _nrows)                              \
+    do {                                                                       \
+        int cols = (int)(_nrows);                                              \
+        int rows = (int)(_ncols);                                              \
+        __typeof__(_targ) targ = (_targ);                                      \
+        if (ROWS(targ) != _nrows || COLS(targ) != _ncols)                      \
+            raise_error(SIMUTIL_DIMENSION_ERROR,                               \
+                        "Unmatching dimensions for vector creation!\n");       \
+        for (int i = 0; i < (int)rows; i++) {                                  \
+            for (int j = 0; j < (int)cols; j++) {                              \
+                targ[i + 1][j + 1] = (_from)[j][i];                            \
+            }                                                                  \
+        }                                                                      \
+    } while (0)
+#else
+#define FROM_MATRIX(_from, _targ, _ncols, _nrows)                              \
+    do {                                                                       \
+        int cols = (int)(_ncols);                                              \
+        int rows = (int)(_nrows);                                              \
+        __typeof__(_targ) targ = (_targ);                                      \
+        if (ROWS(targ) != _nrows || COLS(targ) != _ncols)                      \
+            raise_error(SIMUTIL_DIMENSION_ERROR,                               \
+                        "Unmatching dimensions for vector creation!\n");       \
+        for (int i = 0; i < (int)rows; i++) {                                  \
+            for (int j = 0; j < (int)cols; j++) {                              \
+                targ[i + 1][j + 1] = (_from)[i][j];                            \
+            }                                                                  \
+        }                                                                      \
+    } while (0)
+#endif
+
 
 /**
  * @brief Macro to check if the two matrices are the same shape. Evaluates to 1
@@ -162,8 +171,6 @@ void __print_ulong_m(FILE* fp, matrix(unsigned long) mat);
         }                                                                      \
         equal;                                                                 \
     }))
-
-#define PARALLEL_FOR _Pragma("omp parallel for schedule(static,256)")
 
 /**
  * @brief Macro to set two matrices to be equal.
@@ -438,4 +445,5 @@ void __print_ulong_m(FILE* fp, matrix(unsigned long) mat);
             }                                                                  \
         }                                                                      \
     } while (0)
+
 #endif

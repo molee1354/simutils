@@ -1,24 +1,9 @@
 #ifndef SIMUTIL_VECTOR_H
 #define SIMUTIL_VECTOR_H
 
-#include "error.h"
-#include "simutil_includes.h"
-
-#define vector(T) T*
-
-#define VECTOR_SIZE_BYTE (size_t)(sizeof(size_t) * 1)
-
-/****************************************************************************/
-/*                                                                          */
-/*                        Basic Functions and Macros                        */
-/*                                                                          */
-/****************************************************************************/
-
-/**
- * @brief Macro to access the size byte of the vector
- *
- */
-#define LENGTH(vec) ((int)(*((size_t*)(((char*)(vec) - VECTOR_SIZE_BYTE)) + 0)))
+#ifndef SIMUTIL_VECTOR_BASE_H
+#include "vector_base.h"
+#endif
 
 /**
  * @brief Macro to create a new vector based on an existing stack-allocated
@@ -38,55 +23,65 @@
         }                                                                      \
     } while (0)
 
-void* __init_vector(size_t size, size_t n_elem);
+int __resize_vector(void** vec_mem, size_t new_length, size_t elem_size);
 
-void __resize_vector(void** vec_mem, size_t new_length, size_t elem_size);
-
-#define new_vector(T, length)                                                  \
-    ((vector(T))__init_vector(                                                 \
-        sizeof(T) * ((size_t)(length) + 1) + VECTOR_SIZE_BYTE, (length)))
-
-void __append_element(void** vec_mem, void* elem, size_t elem_size);
+int __append_element(void** vec_mem, void* elem, size_t elem_size);
 
 #define grow_vector(vec, elem)                                                 \
     do {                                                                       \
-        __append_element((void**)(vec), &(__typeof__(**(vec))){elem},          \
-                         sizeof(**(vec)));                                     \
+        if (__append_element((void**)(vec), &(__typeof__(**(vec))){elem},      \
+                             sizeof(**(vec))))                                 \
+            raise_error(SIMUTIL_NULL_ERROR,                                    \
+                        "Received null pointer in 'grow_vector()'\n");         \
     } while (0)
 
 #define resize_vector(vec, resize)                                             \
     do {                                                                       \
-        __resize_vector((void**)(vec), (resize), sizeof(**(vec)));             \
+        if (__resize_vector((void**)(vec), (resize), sizeof(**(vec))))         \
+            raise_error(SIMUTIL_NULL_ERROR,                                    \
+                        "Received null pointer in 'resize_vector()'\n");       \
     } while (0)
 
-#define free_vector(vec)                                                       \
-    do {                                                                       \
-        void* vec_mem = (void*)((char*)(vec) - VECTOR_SIZE_BYTE);              \
-        free(vec_mem);                                                         \
-        vec_mem = NULL;                                                        \
-    } while (0)
+// macro to generate printing functions
+#define PRINT_FUNC(name, type, fmt)                                            \
+    static inline void __print##name##_v(FILE* fp, type vec) {                 \
+        const int length = LENGTH(vec);                                        \
+        if (fp == stdout || fp == stderr)                                      \
+            fprintf(fp, "[");                                                  \
+        for (int i = 1; i <= length; i++) {                                    \
+            if (i != length) {                                                 \
+                fprintf(fp, fmt, vec[i]);                                      \
+                fprintf(fp, ", ");                                             \
+            } else                                                             \
+                fprintf(fp, fmt, vec[i]);                                      \
+        }                                                                      \
+        if (fp == stdout || fp == stderr)                                      \
+            fprintf(fp, "]\n");                                                \
+        else                                                                   \
+            fprintf(fp, "\n");                                                 \
+    }
 
 // printing floating-point numbers
-void __print_float_v(FILE* fp, vector(float) vec);
-void __print_double_v(FILE* fp, vector(double) vec);
-void __print_long_double_v(FILE* fp, vector(long double) vec);
+PRINT_FUNC(_float, vector(float), "%6.3f")
+PRINT_FUNC(_double, vector(double), "%6.3f")
+PRINT_FUNC(_long_double, vector(long double), "%6.3Lf")
 
-// printing integers / chars
-void __print_char_v(FILE* fp, vector(char) vec);
-void __print_uchar_v(FILE* fp, vector(unsigned char) vec);
-void __print_short_v(FILE* fp, vector(short) vec);
-void __print_ushort_v(FILE* fp, vector(unsigned short) vec);
-void __print_int_v(FILE* fp, vector(int) vec);
-void __print_uint_v(FILE* fp, vector(unsigned int) vec);
-void __print_long_v(FILE* fp, vector(long) vec);
-void __print_ulong_v(FILE* fp, vector(unsigned long) vec);
+// printing integers / char
+PRINT_FUNC(_char, vector(char), "%c")
+PRINT_FUNC(_uchar, vector(unsigned char), "%3d")
+PRINT_FUNC(_short, vector(short), "%3hd")
+PRINT_FUNC(_ushort, vector(unsigned short), "%3hd")
+PRINT_FUNC(_int, vector(int), "%3d")
+PRINT_FUNC(_uint, vector(unsigned int), "%3u")
+PRINT_FUNC(_long, vector(long), "%3ld")
+PRINT_FUNC(_ulong, vector(unsigned long), "%3lu")
 
 #define print_vector(vec)                                                      \
     _Generic((vec),                                                            \
         vector(char): __print_char_v,                                          \
-        vector(unsigned char): __print_uchar_v,                                          \
+        vector(unsigned char): __print_uchar_v,                                \
         vector(short): __print_short_v,                                        \
-        vector(unsigned short): __print_ushort_v,                                        \
+        vector(unsigned short): __print_ushort_v,                              \
         vector(int): __print_int_v,                                            \
         vector(unsigned int): __print_uint_v,                                  \
         vector(long): __print_long_v,                                          \
@@ -98,9 +93,9 @@ void __print_ulong_v(FILE* fp, vector(unsigned long) vec);
 #define fprint_vector(fp, vec)                                                 \
     _Generic((vec),                                                            \
         vector(char): __print_char_v,                                          \
-        vector(unsigned char): __print_uchar_v,                                          \
+        vector(unsigned char): __print_uchar_v,                                \
         vector(short): __print_short_v,                                        \
-        vector(unsigned short): __print_ushort_v,                                        \
+        vector(unsigned short): __print_ushort_v,                              \
         vector(int): __print_int_v,                                            \
         vector(unsigned int): __print_uint_v,                                  \
         vector(long): __print_long_v,                                          \
@@ -109,4 +104,5 @@ void __print_ulong_v(FILE* fp, vector(unsigned long) vec);
         vector(double): __print_double_v,                                      \
         vector(long double): __print_long_double_v)(fp, vec)
 
+#undef PRINT_FUNC
 #endif

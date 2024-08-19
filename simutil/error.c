@@ -12,6 +12,18 @@ static void error_type(error_t err) {
         fprintf(stderr, "\n\033[1;31mSIMUTIL ALLOCATE ERROR:\033[0m\n");
         break;
     }
+    case SIMUTIL_TYPE_ERROR: {
+        fprintf(stderr, "\n\033[1;31mSIMUTIL TYPE ERROR:\033[0m\n");
+        break;
+    }
+    case SIMUTIL_NULL_ERROR: {
+        fprintf(stderr, "\n\033[1;31mSIMUTIL NULL ERROR:\033[0m\n");
+        break;
+    }
+    case SIMUTIL_DEFAULT_ERROR: {
+        fprintf(stderr, "\n\033[1;31mSIMUTIL DEFAULT ERROR:\033[0m\n");
+        break;
+    }
     default: {
         fprintf(stderr, "\n\033[1;31mSIMUTIL UNDEFINED ERROR:\033[0m\n");
         break;
