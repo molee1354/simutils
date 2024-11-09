@@ -63,9 +63,9 @@ The `matrix(T)`, like the `vector(T)`, is simply a macro a double pointer of typ
 
 Similar to `vector`, the advantage of using a `matrix(T)` instead of a `T**` is that the `matrix` carries along with it the size information, while still preserving the ability to be directly indexed with double square brackets.
 
-The `matrix` in `simutils` is both *column-major* (by default) and *1-indexed*, similar to matrix implentations in programming languages like Matlab, Fortran, and Julia.
+The `matrix` in `simutils` is both *row-major* (by default) and *1-indexed*, similar to matrix implementations in programming languages like C/C++, Java, or Python.
 
-The `matrix` can follow a *row-major* scheme if the `ROW_MAJOR` macro variable is defined *before* the inclusion of `simutil/matrix.h` header.
+The `matrix` can follow a *column-major* scheme if the `SIMUTILS_COLUMN_MAJOR` macro variable is defined *before* the inclusion of `simutil/matrix.h` header.
 
 ### Usage
 
@@ -77,10 +77,10 @@ To use the `matrix` module, simply include the `simutil/matrix.h` header in the 
 #include "simutil/matrix.h"
 ```
 
-To use row-majored matrices, simply add a `#define ROW_MAJOR` before the include statement.
+To use column-majored matrices, simply add a `#define SIMUTILS_COL_MAJOR` before the include statement.
 
 ```C
-#define ROW_MAJOR
+#define SIMUTILS_COL_MAJOR
 #include "simutil/matrix.h"
 ```
 
@@ -120,9 +120,9 @@ The `matrix3(T)` is a macro for a triple pointer of type `T`, which provides an 
 
 Similar to `vector` and `matrix`, the `matrix3` carries along with it the size information, while still preserving the ability to be directly indexed with double square brackets.
 
-The `matrix3` in `simutils` are *column-major* (by default) and *1-indexed*, similar to indexing schemes in programming languages like Matlab, Fortran, and Julia.
+The `matrix3` in `simutils` are *row-major* (by default) and *1-indexed*, similar to indexing schemes in programming languages like C/C++, Java, and Python.
 
-Like the `matrix`, `matrix3` can follow a *row-major* scheme if the `ROW_MAJOR` macro variable is defined *before* the inclusion of `simutil/matrix.h` header.
+Like the `matrix`, `matrix3` can follow a *column-major* scheme if the `COL_MAJOR` macro variable is defined *before* the inclusion of `simutil/matrix.h` header.
 
 
 ### Usage
@@ -135,10 +135,10 @@ To use the data structures and math operations provided by the `matrix3` module,
 #include "simutil/matrix3.h"
 ```
 
-To use row-majored matrices, simply add a `#define ROW_MAJOR` before the include statement.
+To use row-majored matrices, simply add a `#define SIMUTIL_COL_MAJOR` before the include statement.
 
 ```C
-#define ROW_MAJOR
+#define SIMUTIL_COL_MAJOR
 #include "simutil/matrix3.h"
 ```
 

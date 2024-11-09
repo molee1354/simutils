@@ -56,9 +56,14 @@ some_tensor[i][j][k];
 
 The `matrix` and `matrix3` data structures in `simutils` are column-majored. Memory magic is done in the constructors for both the `matrix` and `tensor` so that the data structures can be both represented and indexed in column-major style.
 
-To solve this problem, the row-major/column-major indexing behavior for `matrix` and `matrix3` data structues provided in `simutils` is ***modifiable***. While the default behavior for matrix indexing is *column-major* (like in FORTRAN, MATLAB, or Julia), a simple preprocessor macro can be defined to use *row-major* indexing (like in C/C++, Java, or Python).
+To solve this problem, the row-major/column-major indexing behavior for `matrix` and `matrix3` data structures provided in `simutils` is ***modifiable***. While the default behavior for matrix indexing is *column-major* (like in FORTRAN, MATLAB, or Julia), a simple preprocessor macro can be defined to use *row-major* indexing (like in C/C++, Java, or Python).
 
-This will simply give you a *column-major* matrix with 3 columns and 4 rows:
+The default `matrix` and `matrix3` types are defined to use *row-major* indexing
+(like in C/C++, Java, or Python). This can be changed to *column-major* indexing
+by adding the `#define SIMUTIL_COL_MAJOR` *before* the `#include
+"simutil/matrix.h"` or `simutil/matrix3.h` statement:
+
+This will simply give you a *row-major* matrix with 3 columns and 4 rows:
 
 ```C
 #include "simutil/matrix.h"
@@ -68,13 +73,13 @@ int main(char** argv, int argc) {
 }
 ```
 
-And adding the `#define ROW_MAJOR` preprocessor directive will give you a *row-major* matrix with 3 columns and 4 rows. Note that `#define ROW_MAJOR` has to come *before* the `#include "simutil/matrix.h"` statement:
+And adding the `#define SIMUTIL_COL_MAJOR` preprocessor directive will give you a *column-major* matrix with 3 columns and 4 rows. Note that `#define SIMUTIL_COL_MAJOR` has to come *before* the `#include "simutil/matrix.h"` statement:
 
 ```C
-#define ROW_MAJOR // must come before the '#include'
+#define SIMUTIL_COL_MAJOR // MUST come before the '#include "simutil/matrix.h' statement
 #include "simutil/matrix.h"
 int main(char** argv, int argc) {
-    matrix(int) my_matrix = new_matrix(int, 3, 4); // 'my_matrix' is now row-majored
+    matrix(int) my_matrix = new_matrix(int, 3, 4); // 'my_matrix' is now column-majored
     return 0;
 }
 ```
