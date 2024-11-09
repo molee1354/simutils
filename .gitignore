@@ -2,6 +2,7 @@
 main.c
 .clangd
 .clang-format
+compile_commands.json
 
 # directories
 obj/
