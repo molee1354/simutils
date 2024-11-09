@@ -9,6 +9,7 @@ obj/
 lib/
 test/
 .vscode/
+.cache/
 
 # file patterns
 *.mat

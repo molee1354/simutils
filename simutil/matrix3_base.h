@@ -32,32 +32,17 @@
 static inline void* __init_matrix3(size_t size, size_t elem_size, size_t ncols,
                                    size_t nrows, size_t ndeps) {
     void* mat_start = calloc(1, size);
-    SIMUTIL_NULLPTR_CHECK(mat_start);
+    __SIMUTIL_NULLPTR_CHECK(mat_start);
     *((size_t*)mat_start + 0) = ncols;
     *((size_t*)mat_start + 1) = nrows;
     *((size_t*)mat_start + 2) = ndeps;
     char*** out = (char***)((char*)mat_start + MATRIX3_SIZE_BYTE);
-    SIMUTIL_NULLPTR_CHECK(out);
-#ifndef ROW_MAJOR
-    char** row_pointers = (char**)(out + (ncols + 1));
-    SIMUTIL_NULLPTR_CHECK(row_pointers);
-    char* data_start = (char*)(row_pointers + ((ncols + 1) * (nrows + 1)));
-    SIMUTIL_NULLPTR_CHECK(data_start);
-
-    for (size_t i = 1; i <= ncols; i++) {
-        out[i] = row_pointers + i * nrows;
-        for (size_t j = 1; j <= nrows; j++) {
-            out[i][j] =
-                data_start +
-                (i * (nrows + 1) * (ndeps + 1) + j * (ndeps + 1)) * elem_size;
-            SIMUTIL_NULLPTR_CHECK(out[i][j]);
-        }
-    }
-#else
+    __SIMUTIL_NULLPTR_CHECK(out);
+#ifdef SIMUTIL_COL_MAJOR
     out[1] = (char**)calloc(1, (size_t)(nrows * ncols + 1) * sizeof(void*));
-    SIMUTIL_NULLPTR_CHECK(out[1]);
+    __SIMUTIL_NULLPTR_CHECK(out[1]);
     out[1][1] = (char*)calloc(1, (nrows * ncols * ndeps + 1) * elem_size);
-    SIMUTIL_NULLPTR_CHECK(out[1][1]);
+    __SIMUTIL_NULLPTR_CHECK(out[1][1]);
     int i, j;
     for (j = 2; j <= (int)ncols; j++)
         out[1][j] = out[1][j - 1] + (ndeps * elem_size);
@@ -67,11 +52,39 @@ static inline void* __init_matrix3(size_t size, size_t elem_size, size_t ncols,
         for (j = 2; j <= (int)ncols; j++)
             out[i][j] = out[i][j - 1] + (ndeps * elem_size);
     }
+#else
+    char** row_pointers = (char**)(out + (ncols + 1));
+    __SIMUTIL_NULLPTR_CHECK(row_pointers);
+    char* data_start = (char*)(row_pointers + ((ncols + 1) * (nrows + 1)));
+    __SIMUTIL_NULLPTR_CHECK(data_start);
+
+    for (size_t i = 1; i <= ncols; i++) {
+        out[i] = row_pointers + i * nrows;
+        for (size_t j = 1; j <= nrows; j++) {
+            out[i][j] =
+                data_start +
+                (i * (nrows + 1) * (ndeps + 1) + j * (ndeps + 1)) * elem_size;
+            __SIMUTIL_NULLPTR_CHECK(out[i][j]);
+        }
+    }
 #endif
     return (void*)out;
 }
 
-#ifndef ROW_MAJOR
+#ifdef SIMUTIL_COL_MAJOR
+#define new_matrix3(T, ncols, nrows, ndeps)                                    \
+    ((matrix3(T))__init_matrix3(                                               \
+        ((nrows + 1) * sizeof(T**) + MATRIX3_SIZE_BYTE), sizeof(T), ncols,     \
+        nrows, ndeps))
+
+#define free_matrix3(mat3)                                                     \
+    do {                                                                       \
+        free((char*)mat3[1][1]);                                               \
+        free((char*)mat3[1]);                                                  \
+        void* mat3_mem = (void*)((char*)mat3 - MATRIX3_SIZE_BYTE);             \
+        free(mat3_mem);                                                        \
+    } while (0)
+#else
 #define new_matrix3(T, ncols, nrows, ndeps)                                    \
     ((matrix3(T))__init_matrix3(                                               \
         ((ncols + 1) * sizeof(T**) + (ncols + 1) * (nrows + 1) * sizeof(T*) +  \
@@ -85,20 +98,6 @@ static inline void* __init_matrix3(size_t size, size_t elem_size, size_t ncols,
         free(mat_start);                                                       \
         mat_start = NULL;                                                      \
     } while (0)
-#else
-#define new_matrix3(T, ncols, nrows, ndeps)                                    \
-    ((matrix3(T))__init_matrix3(                                               \
-        ((nrows + 1) * sizeof(T**) + MATRIX3_SIZE_BYTE), sizeof(T), ncols,     \
-        nrows, ndeps))
-
-#define free_matrix3(mat3)                                                     \
-    do {                                                                       \
-        free((char*)mat3[1][1]);                                               \
-        free((char*)mat3[1]);                                               \
-        void* mat3_mem = (void*)((char*)mat3 - MATRIX3_SIZE_BYTE);             \
-        free(mat3_mem);                                                        \
-    } while (0)
 #endif
-
 
 #endif

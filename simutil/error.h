@@ -13,7 +13,7 @@ typedef enum {
 
 void raise_error(error_t err, const char* format, ...);
 
-#define SIMUTIL_NULLPTR_CHECK(p)                                               \
+#define __SIMUTIL_NULLPTR_CHECK(p)                                             \
     do {                                                                       \
         if (!p) {                                                              \
             raise_error(SIMUTIL_ALLOCATE_ERROR,                                \
