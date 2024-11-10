@@ -11,7 +11,7 @@
 /*                                                                          */
 /****************************************************************************/
 
-#ifdef SIMUTIL_COL_MAJOR
+#ifndef ROW_MAJOR
 #define PRINT_FUNC(name, type, fmt)                                            \
     static inline void __print##name##_m(FILE* fp, type mat) {                 \
         const int nrow = ROWS(mat);                                            \
@@ -103,22 +103,7 @@ PRINT_FUNC(_ulong, matrix(unsigned long), "%3lu")
 /*                                                                          */
 /****************************************************************************/
 
-#ifndef SIMUTIL_COL_MAJOR
-#define FROM_MATRIX(_from, _targ, _ncols, _nrows)                              \
-    do {                                                                       \
-        int cols = (int)(_ncols);                                              \
-        int rows = (int)(_nrows);                                              \
-        __typeof__(_targ) targ = (_targ);                                      \
-        if (ROWS(targ) != _nrows || COLS(targ) != _ncols)                      \
-            raise_error(SIMUTIL_DIMENSION_ERROR,                               \
-                        "Unmatching dimensions for vector creation!\n");       \
-        for (int i = 0; i < (int)rows; i++) {                                  \
-            for (int j = 0; j < (int)cols; j++) {                              \
-                targ[i + 1][j + 1] = (_from)[i][j];                            \
-            }                                                                  \
-        }                                                                      \
-    } while (0)
-#else
+#ifndef ROW_MAJOR
 #define FROM_MATRIX(_from, _targ, _ncols, _nrows)                              \
     do {                                                                       \
         int cols = (int)(_nrows);                                              \
@@ -133,8 +118,23 @@ PRINT_FUNC(_ulong, matrix(unsigned long), "%3lu")
             }                                                                  \
         }                                                                      \
     } while (0)
-
+#else
+#define FROM_MATRIX(_from, _targ, _ncols, _nrows)                              \
+    do {                                                                       \
+        int cols = (int)(_ncols);                                              \
+        int rows = (int)(_nrows);                                              \
+        __typeof__(_targ) targ = (_targ);                                      \
+        if (ROWS(targ) != _nrows || COLS(targ) != _ncols)                      \
+            raise_error(SIMUTIL_DIMENSION_ERROR,                               \
+                        "Unmatching dimensions for vector creation!\n");       \
+        for (int i = 0; i < (int)rows; i++) {                                  \
+            for (int j = 0; j < (int)cols; j++) {                              \
+                targ[i + 1][j + 1] = (_from)[i][j];                            \
+            }                                                                  \
+        }                                                                      \
+    } while (0)
 #endif
+
 
 /**
  * @brief Macro to check if the two matrices are the same shape. Evaluates to 1
@@ -322,7 +322,7 @@ PRINT_FUNC(_ulong, matrix(unsigned long), "%3lu")
  * @param targ Vector of vector* that the operation will be done to
  * @param from Vector of vector* that will be the operation reference
  * @param op Math operation
- * @param like Reference vector for slice
+ * @param like Refernce vector for slice
  *
  */
 #define ELEM_OPER_SLICE_LIKE(_targ, _from, _oper, _like)                       \
@@ -421,7 +421,7 @@ PRINT_FUNC(_ulong, matrix(unsigned long), "%3lu")
  * @param targ Vector of vector* that the operation will be done to
  * @param from Vector of vector* that will be the operation reference
  * @param op Math operation
- * @param like Reference vector for slice
+ * @param like Refernce vector for slice
  */
 #define CONST_OPER_SLICE_LIKE(_targ, _constant, _oper, _like)                  \
     do {                                                                       \

@@ -23,25 +23,8 @@
         }                                                                      \
     } while (0)
 
-/**
- * @brief Function to resize a vector. Not meant to be called directly.
- *
- * @param vec_mem Pointer to a vector
- * @param new_length The new length to resize to
- * @param elem_size The memory size of a single element in the vector.
- * @return Returns zero for a successful resize, and 1 for a null pointer
- */
 int __resize_vector(void** vec_mem, size_t new_length, size_t elem_size);
 
-/**
- * @brief A function to add an element to a vector. Not meant to be called
- * directly
- *
- * @param vec_mem Pointer to a vector
- * @param elem The element to be appended
- * @param elem_size The size of the element to be appended
- * @return Returns zero for a successful resize, and 1 for a null pointer
- */
 int __append_element(void** vec_mem, void* elem, size_t elem_size);
 
 #define grow_vector(vec, elem)                                                 \
