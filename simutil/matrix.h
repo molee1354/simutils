@@ -11,7 +11,7 @@
 /*                                                                          */
 /****************************************************************************/
 
-#ifndef ROW_MAJOR
+#ifdef SIMUTIL_COL_MAJOR
 #define PRINT_FUNC(name, type, fmt)                                            \
     static inline void __print##name##_m(FILE* fp, type mat) {                 \
         const int nrow = ROWS(mat);                                            \
@@ -103,7 +103,7 @@ PRINT_FUNC(_ulong, matrix(unsigned long), "%3lu")
 /*                                                                          */
 /****************************************************************************/
 
-#ifndef ROW_MAJOR
+#ifdef SIMUTIL_COL_MAJOR
 #define FROM_MATRIX(_from, _targ, _ncols, _nrows)                              \
     do {                                                                       \
         int cols = (int)(_nrows);                                              \

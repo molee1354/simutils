@@ -5,7 +5,7 @@
 #include "matrix3_base.h"
 #endif
 
-#ifndef ROW_MAJOR
+#ifdef SIMUTIL_COL_MAJOR
 #define PRINT_FUNC(name, type, fmt)                                            \
     static inline void __print##name##_m3(FILE* fp, type mat3) {               \
         const int ncol = (const int)DIM1(mat3);                                \
