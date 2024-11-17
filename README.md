@@ -2,7 +2,14 @@
 
 A minimal set of C headers and functions to reduce the memory-management
 overhead involved in creating data structures used in scientific and
-mathematicla modeling.
+mathematical modeling.
+
+The functionality was inspired by [*Numerical Recipes in C* 2nd Edition](https://numerical.recipes/),
+and [cvec](https://github.com/ephf/libcvec).
+
+Below is a simple 2D simulation created using `simutils`.
+
+![simutil_demo](./demos/MAC_visualization.gif)
 
 ## What is `simutils`?
 
