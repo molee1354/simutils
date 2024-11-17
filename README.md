@@ -128,7 +128,7 @@ free_matrix(mat3);
 free_matrix(mat4);
 ```
 
-A bit more on how these features are used can be found in the [documents](/docs/usage.md).
+A bit more on how these features are used can be found in the [documents](/docs/usage.md), and some code examples that show how `simutils` can be used are in the `examples/` directory.
 
 ## Installing
 
