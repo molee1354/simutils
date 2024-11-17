@@ -1,69 +1,92 @@
 # `simutils`
 
-A minimal set of C headers and functions to reduce the memory-management overhead involved in scientific programming and mathematical modeling.
+A minimal set of C headers and functions to reduce the memory-management
+overhead involved in creating data structures used in scientific and
+mathematicla modeling.
 
-## Why `simutils`?
+## What is `simutils`?
 
-`simutils` aims to fix some of the common issues encountered in using C for scientific programming, with its main strengths in the following areas.
+You can think of `simutils` simply as a set of header files that provide helpful
+macros and functions for creating and using vectors and matrices in C.
+
+## Why use `simutils`?
+
+### Creation of Objects with Minimal Overhead
+
+With `simutils`, you can easily create common data structures like vectors and
+matrices, and define them with *any element type*.
+
+For `vector` types
+
+```C
+// Define size and type in instantiation
+vector(int) vec1 = new_vector(int, 5);
+vector(double) vec2 = new_vector(double, 1000);
+
+// Define custom types
+typedef float MyType;
+vector(MyType) vec3 = new_vector(MyType, 10);
+
+// Nested data structures
+vector(vector(char)) vec4 = new_vector(vector(char), 3);
+```
+
+Similarly for `matrix` types
+
+```C
+// A matrix of integers with 4 columns and 3 rows
+matrix(int) mat1 = new_matrix(int, 4,3);
+
+// A matrix of doubles with 2 columns and 7 rows
+matrix(double) mat2 = new_matrix(double, 2,7);
+
+// Define custom types
+typedef float MyType;
+matrix(MyType) mat3 = new_matrix(MyType, 10,10);
+
+// Nested data structures
+matrix(matrix(char)) mat4 = new_matrix(matrix(char), 3, 8);
+```
 
 ### Implicit Size Information
 
-Whenever one starts using more abstract data structures in C like arrays and strings, they immediately run into issues with knowing size. We want the length of an array or string somehow has to be relayed along with data type itself, which many times adds a lot of unnecessary overhead to the program.
-
-All the data structures provided in `simutils` have macros that access size information. No more messing around with structs, global variables, or extra function parameters.
-
-```C
-// Getting the length of a vector is just a macro call!
-int vector_size = LENGTH(some_vector);
-
-// Getting the rows/columns of a matrix are also just macro calls.
-int num_rows = ROWS(some_matrix);
-int num_cols = COLS(some_matrix);
-```
-
-This is done by setting apart a specific location in memory that includes information about the size of the data structure. Since this location has a fixed memory offset with respect to the pointer that is being used, it can easily be accessed through macros and/or functions.
-
-### User-defined Element Types
-
-Types in C are usually defined at compile time. This makes it so that abstract data structures (like arrays, matrices, and vectors) have to be defined for *each type* that might be used. `simutils` solved this by using function-like macros that take in type definitions as arguments, so that the type of elements contained in the abstract data structes can be defined at *runtime* rather than at *compile time*.
+Getting the size of data structures like vectors and matrices is usually not
+very straightforward in C. `simutils` fixes this by including the size
+information with the data structure itself, but not as in `structs`.
 
 ```C
-vector(int) my_vector = new_vector(int, 3); // vector of type 'int'
-vector(long double) my_vector2 = new_matrix(long double, 4); // vector of type 'long double'
+// Accessing the number of elements in a vector
+int my_len = LENGTH(vec1)
 
-// matrix of vectors of type 'my_type'
-typedef float my_type;
-matrix(vector(my_type)) my_matrix = new_matrix(vector(my_type), 3);
+// Accessing the number of rows/columns in a matrix
+int rows = ROWS(mat1);
+int cols = COLS(mat1);
 ```
 
 ### 1-Indexed Data Structures
 
-While to some, array-like data structures being 1-indexed might appear to be a bit out-of-style, such a scheme allows for the seamless expression of mathematical notations within programming. The `vector`, and `matrix` data structures proveided in `simutils` are all 1-indexed to fit this purpose.
-
-### Modifiable Row-major, Column-major Behavior
-
-Converting between row-major and column-major matrices might be simple conceptually, but one quickly learns that implementing that "simple" change turns out to be a bit more involved than just switching `i` and `j`.
+A lot of programming languages designed with scientific/mathematical
+applications in mind have 1-indexed vectors and matrices. `simutils` follows
+this convention.
 
 ```C
-// The 'i' index corresponds to the 'row' index in a row-major indexing scheme
-some_matrix[i][j];
-some_tensor[i][j][k];
-
-// The 'i' index corresponds to the 'column' index in a column-major indexing scheme
-some_matrix[i][j];
-some_tensor[i][j][k];
+vec1[1] = 1; // setting the first element of a vector to '1'
+mat1[1][1] = 1; // setting the first element of a matrix to '1'
 ```
 
-The `matrix` and `matrix3` data structures in `simutils` are column-majored. Memory magic is done in the constructors for both the `matrix` and `tensor` so that the data structures can be both represented and indexed in column-major style.
+The final index of a `vector` or `matrix` therefore is *the number of elements
+in that dimension*.
 
-To solve this problem, the row-major/column-major indexing behavior for `matrix` and `matrix3` data structures provided in `simutils` is ***modifiable***. While the default behavior for matrix indexing is *column-major* (like in FORTRAN, MATLAB, or Julia), a simple preprocessor macro can be defined to use *row-major* indexing (like in C/C++, Java, or Python).
+```C
+vec1[LENGTH(vec1)] = -1; // setting the final element of a vector to '-1'
+mat1[COLS(mat1)][ROWS(mat1)] = -1; // setting the final element of a matrix to '-1'
+```
 
-The default `matrix` and `matrix3` types are defined to use *row-major* indexing
-(like in C/C++, Java, or Python). This can be changed to *column-major* indexing
-by adding the `#define SIMUTIL_COL_MAJOR` *before* the `#include
-"simutil/matrix.h"` or `simutil/matrix3.h` statement:
+### Modifiable Row-major / Column-major Matrices
+The `matrix` data structure provided by `simutils` gives the user the ability to
+choose between *row-major* and *column-major* indexing according to their needs.
 
-This will simply give you a *row-major* matrix with 3 columns and 4 rows:
+By default, `matrix` matrices are row-majored
 
 ```C
 #include "simutil/matrix.h"
@@ -73,7 +96,10 @@ int main(char** argv, int argc) {
 }
 ```
 
-And adding the `#define SIMUTIL_COL_MAJOR` preprocessor directive will give you a *column-major* matrix with 3 columns and 4 rows. Note that `#define SIMUTIL_COL_MAJOR` has to come *before* the `#include "simutil/matrix.h"` statement:
+but adding the `#define SIMUTIL_COL_MAJOR` preprocessor directive will give you
+a *column-major* matrix with 3 columns and 4 rows. Note that
+`#define SIMUTIL_COL_MAJOR` has to come *before* the
+`#include "simutil/matrix.h"` statement:
 
 ```C
 #define SIMUTIL_COL_MAJOR // MUST come before the '#include "simutil/matrix.h' statement
@@ -82,6 +108,24 @@ int main(char** argv, int argc) {
     matrix(int) my_matrix = new_matrix(int, 3, 4); // 'my_matrix' is now column-majored
     return 0;
 }
+```
+
+### Easy-`free`
+
+Freeing the memory allocated for vectors and matrices is just a simple macro
+call as well.
+
+```C
+// All the memory handling is done within the macro
+free_vector(vec1);
+free_vector(vec2);
+free_vector(vec3);
+free_vector(vec4);
+
+free_matrix(mat1);
+free_matrix(mat2);
+free_matrix(mat3);
+free_matrix(mat4);
 ```
 
 A bit more on how these features are used can be found in the [documents](/docs/usage.md).
@@ -111,6 +155,14 @@ Install the library by copying the compiled shared-object `libsimutils.so` into 
 ```shell
 make install
 ```
+
+You can also specify the path to the `simutils` directory using the `-I` flag if
+you wish to use `simutils` without having to add them globally.
+
+```shell
+... -I/path/to/simutils
+```
+
 ## Usage
 
 To use the data structures and math modules provided by `simutils`, simply include the `simutil/*.h` with the specified header file in your program's include directive.
