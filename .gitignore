@@ -2,12 +2,14 @@
 main.c
 .clangd
 .clang-format
+compile_commands.json
 
 # directories
 obj/
 lib/
 test/
 .vscode/
+.cache/
 
 # file patterns
 *.mat

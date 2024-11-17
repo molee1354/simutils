@@ -11,7 +11,8 @@ typedef enum {
     SIMUTIL_DEFAULT_ERROR
 } error_t;
 
-void raise_error(error_t err, const char* format, ...);
+void raise_error(error_t err, const char* format, ...)
+    __attribute__((format(printf, 2, 3)));
 
 #define SIMUTIL_NULLPTR_CHECK(p)                                               \
     do {                                                                       \
