@@ -4,6 +4,10 @@
 #include "error.h"
 #include "simutil_includes.h"
 
+#ifdef SIMUTIL_COL_MAJOR
+#define __SET_COL_MAJOR
+#endif
+
 #define matrix3(T) T***
 
 #define MATRIX3_SIZE_BYTE (size_t)(sizeof(size_t) * 3)
@@ -38,7 +42,7 @@ static inline void* __init_matrix3(size_t size, size_t elem_size, size_t ncols,
     *((size_t*)mat_start + 2) = ndeps;
     char*** out = (char***)((char*)mat_start + MATRIX3_SIZE_BYTE);
     SIMUTIL_NULLPTR_CHECK(out);
-#ifdef SIMUTIL_COL_MAJOR
+#ifdef __SET_COL_MAJOR
     char** row_pointers = (char**)(out + (ncols + 1));
     SIMUTIL_NULLPTR_CHECK(row_pointers);
     char* data_start = (char*)(row_pointers + ((ncols + 1) * (nrows + 1)));
@@ -71,7 +75,7 @@ static inline void* __init_matrix3(size_t size, size_t elem_size, size_t ncols,
     return (void*)out;
 }
 
-#ifdef SIMUTIL_COL_MAJOR
+#ifdef __SET_COL_MAJOR
 #define new_matrix3(T, ncols, nrows, ndeps)                                    \
     ((matrix3(T))__init_matrix3(                                               \
         ((ncols + 1) * sizeof(T**) + (ncols + 1) * (nrows + 1) * sizeof(T*) +  \

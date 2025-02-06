@@ -4,6 +4,10 @@
 #include "error.h"
 #include "simutil_includes.h"
 
+#ifdef SIMUTIL_COL_MAJOR
+#define __SET_COL_MAJOR
+#endif
+
 /* Type alias for matrix */
 #define matrix(T) T**
 
@@ -44,7 +48,7 @@ static inline void* __init_matrix(size_t size, size_t elem_size, size_t ncols,
     *((size_t*)mat_start + 1) = nrows;
     char** out = (char**)((char*)mat_start + MATRIX_SIZE_BYTE);
     SIMUTIL_NULLPTR_CHECK(out);
-#ifdef SIMUTIL_COL_MAJOR
+#ifdef __SET_COL_MAJOR
     char* data_start = (char*)(out + (ncols + 1));
     SIMUTIL_NULLPTR_CHECK(data_start);
     for (size_t i = 1; i <= ncols; i++) {
@@ -67,7 +71,7 @@ static inline void* __init_matrix(size_t size, size_t elem_size, size_t ncols,
  * @param ncols Number of columns
  * @param nrows Number of rows
  */
-#ifdef SIMUTIL_COL_MAJOR
+#ifdef __SET_COL_MAJOR
 #define new_matrix(T, ncols, nrows)                                            \
     ((matrix(T))__init_matrix(((ncols + 1) * sizeof(T*) +                      \
                                (ncols + 1) * (nrows + 1) * sizeof(T) +         \
@@ -85,7 +89,7 @@ static inline void* __init_matrix(size_t size, size_t elem_size, size_t ncols,
  *
  * @param mat Matrix to free
  */
-#ifdef SIMUTIL_COL_MAJOR
+#ifdef __SET_COL_MAJOR
 #define free_matrix(mat)                                                       \
     do {                                                                       \
         void* mat_start = (void*)((char*)(mat) - MATRIX_SIZE_BYTE);            \
