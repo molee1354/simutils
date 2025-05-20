@@ -12,6 +12,15 @@
         }                                                                      \
     } while (0)
 
+void* __init_vector(size_t size, size_t n_elem) {
+    void* vec_start = calloc(1, size);
+    SIMUTIL_NULLPTR_CHECK(vec_start);
+    *(((size_t*)vec_start) + 0) = n_elem;
+    char* out = (char*)vec_start + VECTOR_SIZE_BYTE;
+    SIMUTIL_NULLPTR_CHECK(out);
+    return (void*)out;
+}
+
 int __append_element(void** vec_mem, void* elem, size_t elem_size) {
     __VECTOR_NULLCHECK(*vec_mem);
     __VECTOR_NULLCHECK(vec_mem);
@@ -21,9 +30,20 @@ int __append_element(void** vec_mem, void* elem, size_t elem_size) {
                                                  VECTOR_SIZE_BYTE + elem_size);
     __VECTOR_NULLCHECK(vec_start_new);
     *(((size_t*)vec_start_new) + 0) = new_length;
-    memcpy((void*)((char*)vec_start_new + new_length * elem_size +
+
+    memcpy((void*)((char*)vec_start_new +
+                   new_length * elem_size +
+                   (VECTOR_START_IDX - 1 + 1) * elem_size +
                    VECTOR_SIZE_BYTE),
            elem, elem_size);
+
+    /* memcpy((void*)((char*)vec_start_new +
+                VECTOR_SIZE_BYTE +
+                new_length * elem_size +
+                (VECTOR_START_IDX - 1) * elem_size
+                ),
+           elem, elem_size); */
+
     char* out = (char*)vec_start_new;
     *(vec_mem) = (void*)(out + VECTOR_SIZE_BYTE);
     return 0;
