@@ -23,21 +23,22 @@
         }                                                                      \
     } while (0)
 
-int __resize_vector(void** vec_mem, size_t new_length, size_t elem_size);
+int __resize_vector(void **vec_mem, size_t new_length, size_t elem_size);
 
-int __append_element(void** vec_mem, void* elem, size_t elem_size);
+int __append_element(void **vec_mem, void *elem, size_t elem_size,
+                     const int start_idx);
 
 #define grow_vector(vec, elem)                                                 \
     do {                                                                       \
-        if (__append_element((void**)(vec), &(__typeof__(**(vec))){elem},      \
-                             sizeof(**(vec))))                                 \
+        if (__append_element((void **)(vec), &(__typeof__(**(vec))){elem},     \
+                             sizeof(**(vec)), (const int)VECTOR_START_IDX))    \
             raise_error(SIMUTIL_NULL_ERROR,                                    \
                         "Received null pointer in 'grow_vector()'\n");         \
     } while (0)
 
 #define resize_vector(vec, resize)                                             \
     do {                                                                       \
-        if (__resize_vector((void**)(vec), (resize), sizeof(**(vec))))         \
+        if (__resize_vector((void **)(vec), (resize), sizeof(**(vec))))        \
             raise_error(SIMUTIL_NULL_ERROR,                                    \
                         "Received null pointer in 'resize_vector()'\n");       \
     } while (0)

@@ -21,7 +21,8 @@ void* __init_vector(size_t size, size_t n_elem) {
     return (void*)out;
 }
 
-int __append_element(void** vec_mem, void* elem, size_t elem_size) {
+int __append_element(void** vec_mem, void* elem, size_t elem_size,
+                     const int start_idx) {
     __VECTOR_NULLCHECK(*vec_mem);
     __VECTOR_NULLCHECK(vec_mem);
     const int new_length = LENGTH(*vec_mem) + 1;
@@ -32,17 +33,9 @@ int __append_element(void** vec_mem, void* elem, size_t elem_size) {
     *(((size_t*)vec_start_new) + 0) = new_length;
 
     memcpy((void*)((char*)vec_start_new +
-                   new_length * elem_size +
-                   (VECTOR_START_IDX - 1 + 1) * elem_size +
-                   VECTOR_SIZE_BYTE),
-           elem, elem_size);
-
-    /* memcpy((void*)((char*)vec_start_new +
                 VECTOR_SIZE_BYTE +
-                new_length * elem_size +
-                (VECTOR_START_IDX - 1) * elem_size
-                ),
-           elem, elem_size); */
+                (new_length - 1 + start_idx) * elem_size),
+           elem, elem_size);
 
     char* out = (char*)vec_start_new;
     *(vec_mem) = (void*)(out + VECTOR_SIZE_BYTE);

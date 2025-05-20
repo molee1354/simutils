@@ -8,6 +8,9 @@
 
 #define VECTOR_SIZE_BYTE (size_t)(sizeof(size_t) * 1)
 
+// Be default, start index is 0
+#define VECTOR_START_IDX 0
+
 #ifdef SIMUTIL_VECTOR_START_IDX_1
 #define VECTOR_START_IDX 1
 #else
