@@ -12,6 +12,7 @@
 
 #include <math.h>
 #include <simutil/vector.h>
+#include <simutil/vector_print.h>
 #define EPS (3.0e-11)
 
 static void gausslegendre(double x1, double x2, vector(double) x,
