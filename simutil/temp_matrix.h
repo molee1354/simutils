@@ -47,7 +47,9 @@
 /*                                                                            */
 /******************************************************************************/
 
-#define SIMUTIL_MATRIX_IMPLEMENTATION
+// #define SIMUTIL_MATRIX_IMPLEMENTATION
+// #define __SET_COL_MAJOR
+
 /**
  * @brief Function to initialize the memory needed for a new matrix.
  *
@@ -64,19 +66,20 @@ void *__init_matrix(size_t size, size_t elem_size, size_t ncol, size_t nrow) {
         return NULL;
     *((size_t *)mat_start + 0) = ncol;
     *((size_t *)mat_start + 1) = nrow;
+#ifndef __SET_COL_MAJOR
     const size_t nrows = nrow - __MATRIX_START_IDX + 1;
     const size_t ncols = ncol - __MATRIX_START_IDX + 1;
+#endif
     char **out = (char **)((char *)mat_start + __MATRIX_SIZE_BYTE);
-    /* out += elem_size;
-    out -= __MATRIX_START_IDX * elem_size; */
     if (!out)
         return NULL;
 #ifdef __SET_COL_MAJOR
-    char *data_start = (char *)(out + (ncols + 1));
+    char *data_start = (char *)(out + (ncol + __MATRIX_START_IDX));
     if (!data_start)
         return NULL;
-    for (size_t i = 1; i <= ncols; i++) {
-        out[i] = data_start + i * (nrows + 1) * elem_size;
+    for (size_t i = __MATRIX_START_IDX; i <= ncol + __MATRIX_START_IDX - 1;
+         i++) {
+        out[i] = data_start + i * (nrow + __MATRIX_START_IDX) * elem_size;
         if (!out[i])
             NULL;
     }
@@ -85,9 +88,7 @@ void *__init_matrix(size_t size, size_t elem_size, size_t ncol, size_t nrow) {
         1, (size_t)(((nrows * ncols + 1) + __MATRIX_SIZE_BYTE) * elem_size));
     if (!out)
         return NULL;
-    /* out[__MATRIX_START_IDX] += elem_size;
-    out[__MATRIX_START_IDX] -= __MATRIX_START_IDX * elem_size; */
-    for (size_t i = 1 + __MATRIX_START_IDX; i <= nrow; i++) {
+    for (size_t i = 1 + __MATRIX_START_IDX; i <= nrow+__MATRIX_START_IDX-1; i++) {
         out[i] = out[i - 1] + (ncols * elem_size);
         if (!out[i])
             return NULL;
@@ -143,7 +144,7 @@ void *__init_matrix(size_t size, size_t elem_size, size_t ncol, size_t nrow) {
 #else
 #define free_matrix(__mptr)                                                    \
     do {                                                                       \
-        free((char *)__mptr[__MATRIX_START_IDX]);     \
+        free((char *)__mptr[__MATRIX_START_IDX]);                              \
         __mptr[__MATRIX_START_IDX] = NULL;                                     \
         void *mat_start = (void *)((char *)__mptr - __MATRIX_SIZE_BYTE);       \
         free(mat_start);                                                       \
