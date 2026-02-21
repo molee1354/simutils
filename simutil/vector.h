@@ -1,54 +1,159 @@
 #ifndef SIMUTIL_VECTOR_H
 #define SIMUTIL_VECTOR_H
 
-#ifndef SIMUTIL_VECTOR_BASE_H
-#include "vector_base.h"
+#include <stddef.h>
+#include <stdlib.h>
+#include <string.h>
+
+#include <stdio.h>
+
+#define vector(T) T *
+
+#define __VECTOR_SIZE_BYTE (size_t)(sizeof(size_t) * 1)
+
+#ifdef SIMUTIL_VECTOR_START_IDX_1
+#define __VECTOR_START_IDX 1
+#else
+#define __VECTOR_START_IDX 0
 #endif
 
-/**
- * @brief Macro to create a new vector based on an existing stack-allocated
- * vector. Assumes that there is already an existing pointer to the vector
- * 'targ' that is the same size as the static vector.
- *
- */
-#define FROM_VECTOR(from, _targ, _size)                                        \
+/******************************************************************************/
+/*                                                                            */
+/*                          Basic Functions and Macros                        */
+/*                                                                            */
+/******************************************************************************/
+
+// Macro to access the size byte of the vector
+#define __VECTOR_LENGTH(__vptr)                                                \
+    ((int)(*((size_t *)(((char *)(__vptr) - __VECTOR_SIZE_BYTE)) + 0)))
+
+// User-end macro to access vector size
+#define size_vector(__vptr) __VECTOR_LENGTH(__vptr)
+#define length_vector(__vptr) __VECTOR_LENGTH(__vptr)
+
+/******************************************************************************/
+/*                                                                            */
+/*                             Internal Functions                             */
+/*                                                                            */
+/******************************************************************************/
+
+// Internal function to allocate memory and store the size of the vector
+void *__init_vector(size_t size, size_t n_elem);
+#ifdef SIMUTIL_VECTOR_IMPLEMENTATION
+void *__init_vector(size_t size, size_t n_elem) {
+    void *vec_start = calloc(1, size);
+    if (!vec_start)
+        return NULL;
+    *(((size_t *)vec_start) + 0) = n_elem;
+    char *out = (char *)vec_start + __VECTOR_SIZE_BYTE;
+    if (!out)
+        return NULL;
+    return (void *)out;
+}
+#endif
+
+// Internal function to resize vector
+int __resize_vector(void **vec_mem, size_t new_length, size_t elem_size);
+
+#ifdef SIMUTIL_VECTOR_IMPLEMENTATION
+int __resize_vector(void **vec_mem, size_t new_length, size_t elem_size) {
+    if (!(*vec_mem))
+        return 1;
+    if (!vec_mem)
+        return 1;
+    void *vec_start = (void *)((char *)*vec_mem - __VECTOR_SIZE_BYTE);
+    void *vec_start_new =
+        realloc(vec_start, new_length * elem_size + __VECTOR_SIZE_BYTE +
+                               (elem_size * __VECTOR_START_IDX));
+    if (!vec_start_new)
+        return 1;
+    *(((size_t *)vec_start_new) + 0) = new_length;
+    char *out = (char *)vec_start_new;
+    *(vec_mem) = (void *)(out + __VECTOR_SIZE_BYTE);
+    return 0;
+}
+#endif
+
+// Internal function to add an element to a vector
+int __append_element(void **vec_mem, void *elem, size_t elem_size,
+                     const int start_idx);
+#ifdef SIMUTIL_VECTOR_IMPLEMENTATION
+int __append_element(void **vec_mem, void *elem, size_t elem_size,
+                     const int start_idx) {
+    if (!(*vec_mem))
+        return 1;
+    if (!vec_mem)
+        return 1;
+    const int new_length = __VECTOR_LENGTH(*vec_mem) + 1;
+    void *vec_start = (void *)((char *)*vec_mem - __VECTOR_SIZE_BYTE);
+    void *vec_start_new =
+        realloc(vec_start, new_length * elem_size + __VECTOR_SIZE_BYTE +
+                               (elem_size * __VECTOR_START_IDX));
+    if (!vec_start_new)
+        return 1;
+    *(((size_t *)vec_start_new) + 0) = new_length;
+
+    memcpy((void *)((char *)vec_start_new + __VECTOR_SIZE_BYTE +
+                    (new_length - 1 + start_idx) * elem_size),
+           elem, elem_size);
+
+    char *out = (char *)vec_start_new;
+    *(vec_mem) = (void *)(out + __VECTOR_SIZE_BYTE);
+    return 0;
+}
+#endif
+
+/******************************************************************************/
+/*                                                                            */
+/*                                User-end Macros                             */
+/*                                                                            */
+/******************************************************************************/
+
+// User-end macro to create a new vector
+#define new_vector(T, __vlen)                                                  \
+    ((vector(T))__init_vector(                                                 \
+        sizeof(T) * ((size_t)(__vlen) + __VECTOR_START_IDX) +                  \
+            __VECTOR_SIZE_BYTE,                                                \
+        (__vlen)))
+
+// User-end macro to free a vector
+#define free_vector(__vptr)                                                    \
     do {                                                                       \
-        int size = (int)(_size);                                               \
-        __typeof__(_targ) targ = (_targ);                                      \
-        if (LENGTH(targ) != size)                                              \
-            raise_error(SIMUTIL_DIMENSION_ERROR,                               \
-                        "Unmatching dimensions for vector creation!\n");       \
-        for (int i = 0; i < (int)size; i++) {                                  \
-            targ[i + 1] = (from)[i];                                           \
-        }                                                                      \
+        void *__vptr_mem = (void *)((char *)(__vptr) - __VECTOR_SIZE_BYTE);    \
+        free(__vptr_mem);                                                      \
+        __vptr_mem = NULL;                                                     \
     } while (0)
 
-int __resize_vector(void** vec_mem, size_t new_length, size_t elem_size);
-
-int __append_element(void** vec_mem, void* elem, size_t elem_size);
-
+// User-end macro to add an element to the end of a vector
 #define grow_vector(vec, elem)                                                 \
     do {                                                                       \
-        if (__append_element((void**)(vec), &(__typeof__(**(vec))){elem},      \
-                             sizeof(**(vec))))                                 \
-            raise_error(SIMUTIL_NULL_ERROR,                                    \
-                        "Received null pointer in 'grow_vector()'\n");         \
+        if (__append_element((void **)(vec), &(__typeof__(**(vec))){elem},     \
+                             sizeof(**(vec)), (const int)__VECTOR_START_IDX))  \
+            fprintf(stderr, "Received null pointer from \'grow_vector()\'\n"); \
     } while (0)
 
+// User-end macro to resize a vector
 #define resize_vector(vec, resize)                                             \
     do {                                                                       \
-        if (__resize_vector((void**)(vec), (resize), sizeof(**(vec))))         \
-            raise_error(SIMUTIL_NULL_ERROR,                                    \
-                        "Received null pointer in 'resize_vector()'\n");       \
+        if (__resize_vector((void **)(vec), (resize), sizeof(**(vec))))        \
+            fprintf(stderr,                                                    \
+                    "Received null pointer from \'resize_vector()\'\n");       \
     } while (0)
 
+/******************************************************************************/
+/*                                                                            */
+/*                               Printing Vectors                             */
+/*                                                                            */
+/******************************************************************************/
+
+#ifdef SIMUTIL_VECTOR_PRINT
 // macro to generate printing functions
 #define PRINT_FUNC(name, type, fmt)                                            \
-    static inline void __print##name##_v(FILE* fp, type vec) {                 \
-        const int length = LENGTH(vec);                                        \
+    static inline void __print##name##_v(FILE *fp, type vec) {                 \
+        const size_t length = __VECTOR_LENGTH(vec) + __VECTOR_START_IDX - 1;   \
         if (fp == stdout || fp == stderr)                                      \
             fprintf(fp, "[");                                                  \
-        for (int i = 1; i <= length; i++) {                                    \
+        for (size_t i = __VECTOR_START_IDX; i <= length; i++) {                \
             if (i != length) {                                                 \
                 fprintf(fp, fmt, vec[i]);                                      \
                 fprintf(fp, ", ");                                             \
@@ -105,4 +210,6 @@ PRINT_FUNC(_ulong, vector(unsigned long), "%3lu")
         vector(long double): __print_long_double_v)(fp, vec)
 
 #undef PRINT_FUNC
+#endif
+
 #endif
