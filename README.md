@@ -59,30 +59,41 @@ information with the data structure itself, but not as in `structs`.
 
 ```C
 // Accessing the number of elements in a vector
-int my_len = LENGTH(vec1)
+int my_len = size_matrix(vec1)
 
 // Accessing the number of rows/columns in a matrix
-int rows = ROWS(mat1);
-int cols = COLS(mat1);
+int rows = nrow_matrix(mat1);
+int cols = ncol_matrix(mat1);
 ```
 
-### 1-Indexed Data Structures
+### Modifiable 1 and 0-indexed Data Structures
 
-A lot of programming languages designed with scientific/mathematical
-applications in mind have 1-indexed vectors and matrices. `simutils` follows
-this convention.
+One of the key features of `simutils` data structures is that they have fully
+modifiable behavior, based on the user's needs. By default the vectors and
+matrices are 0-indexed, but this can be modified by defining a preprocessor
+macro at the start of the program.
 
 ```C
+// Default behavior is 0-index
+#include "simutil/vector.h"
+#include "simutil/matrix.h"
+
+vec1[0] = 1; // setting the first element of a vector to '1'
+mat1[0][0] = 1; // setting the first element of a matrix to '1'
+```
+
+Using the `SIMUTIL_VECTOR_START_IDX_1`, you can modify the indexing behavior of
+vectors (and matrices with its corresponding macro definition).
+
+```C
+// Define macro for 1-indexed vectors and matrices
+#define SIMUTIL_VECTOR_START_IDX_1
+#define SIMUTIL_MATRIX_START_IDX_1
+#include "simutil/vector.h"
+#include "simutil/matrix.h"
+
 vec1[1] = 1; // setting the first element of a vector to '1'
 mat1[1][1] = 1; // setting the first element of a matrix to '1'
-```
-
-The final index of a `vector` or `matrix` therefore is *the number of elements
-in that dimension*.
-
-```C
-vec1[LENGTH(vec1)] = -1; // setting the final element of a vector to '-1'
-mat1[COLS(mat1)][ROWS(mat1)] = -1; // setting the final element of a matrix to '-1'
 ```
 
 ### Modifiable Row-major / Column-major Matrices
@@ -131,46 +142,18 @@ free_matrix(mat3);
 free_matrix(mat4);
 ```
 
-A bit more on how these features are used can be found in the [documents](/docs/usage.md), and some code examples that show how `simutils` can be used are in the `examples/` directory.
-
-## Installing
-
-Clone this repository with the following command:
-
-```shell
-git clone https://github.com/molee1354/simutils.git
-```
-
-Navigate into the new `simutils` directory
-
-```shell
-cd simutils
-```
-
-Compile the code
-
-```shell
-make
-```
-
-Install the library by copying the compiled shared-object `libsimutils.so` into `/usr/lib/`, and the header files to `/usr/include/`. This step will require elevated privileges as it runs `sudo` commands.
-
-```shell
-make install
-```
-
-You can also specify the path to the `simutils` directory using the `-I` flag if
-you wish to use `simutils` without having to add them globally.
-
-```shell
-... -I/path/to/simutils
-```
-
 ## Usage
 
-To use the data structures and math modules provided by `simutils`, simply include the `simutil/*.h` with the specified header file in your program's include directive.
+Simply copy the header files in the `simutil` directory into the project that
+you are working on, and make sure to define the implementation macro before
+including the header files.
 
-Once `simutils` is properly installed, make sure to add the `-lsimutils` flag in the linking stage of your code.
+```C
+#define SIMUTIL_VECTOR_IMPLEMENTATION
+#include "simutil/vector.h"
+```
 
-For more specific instructions on how to use the different `simutils` modules, refer to the [documentations](docs/usage.md).
+Also, make sure to add any behavior modifier macros *before* the header files
+are included. By default, both vectors and matrices will be *0-indexed*, and
+matrices will be *row-major* (like in C/C++).
 
