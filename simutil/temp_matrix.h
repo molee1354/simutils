@@ -85,7 +85,7 @@ void *__init_matrix(size_t size, size_t elem_size, size_t ncol, size_t nrow) {
     }
 #else
     out[__MATRIX_START_IDX] = (char *)calloc(
-        1, (size_t)(((nrows * ncols + 1) + __MATRIX_SIZE_BYTE) * elem_size));
+        1, (size_t)(((nrows * ncols + 0) + __MATRIX_SIZE_BYTE) * elem_size));
     if (!out)
         return NULL;
     for (size_t i = 1 + __MATRIX_START_IDX; i <= nrow+__MATRIX_START_IDX-1; i++) {
